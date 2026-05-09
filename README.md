@@ -22,3 +22,22 @@ cd android
 ```
 
 The APK will be at `Ninehoto.Android/bin/Debug/net8.0-android/apk/debug/Ninehoto.Android.apk`
+
+## iOS
+
+**Prerequisites:** Xcode 15+, XcodeGen
+
+```bash
+cd ios
+
+# Generate the Xcode project (only needed if you change .yml or add/remove source files)
+xcodegen generate
+
+# Open in Xcode and run on a simulator or device
+open Ninehoto.xcodeproj
+```
+
+Or build from command line:
+```bash
+xcodebuild -project Ninehoto.xcodeproj -scheme Ninehoto -configuration Debug -destination 'generic platform=iOS Simulator' build
+```
