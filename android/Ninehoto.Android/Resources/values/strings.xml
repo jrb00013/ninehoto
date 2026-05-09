@@ -22,4 +22,5 @@
   <string name="delete_failed">Delete failed or was cancelled: %1$s</string>
   <string name="loading">Loading…</string>
   <string name="empty_gallery">No photos or videos found on this device.</string>
+  <string name="undo_label">Undo</string>
 </resources>
