@@ -11,37 +11,92 @@
       android:layout_height="match_parent"
       android:fillViewport="true">
     <LinearLayout
-        android:id="@+id/menu_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp"
+        android:paddingTop="80dp"
+        android:paddingBottom="40dp"
+        android:paddingHorizontal="24dp"
         android:gravity="center_horizontal">
 
+      <ImageView
+          android:layout_width="72dp"
+          android:layout_height="72dp"
+          android:src="@drawable/ic_launcher_fg"
+          android:background="@color/ic_launcher_bg"
+          android:contentDescription="@string/app_name" />
+
       <TextView
-          android:id="@+id/title_text"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:layout_marginTop="20dp"
           android:text="@string/app_name"
-          android:textSize="28sp"
+          android:textSize="32sp"
           android:textStyle="bold"
           android:textColor="#FFFFFFFF" />
 
       <TextView
-          android:id="@+id/blurb_text"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="16dp"
+          android:layout_marginTop="12dp"
           android:text="@string/main_blurb"
-          android:textColor="#CCFFFFFF"
+          android:textColor="#AAFFFFFF"
           android:textSize="15sp"
           android:gravity="center_horizontal" />
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:layout_marginTop="24dp"
+          android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="12dp">
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="←"
+              android:textSize="24sp"
+              android:textColor="#FFFF4444" />
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="delete"
+              android:textSize="12sp"
+              android:textColor="#FF888888" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="12dp">
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="→"
+              android:textSize="24sp"
+              android:textColor="#FF44FF88" />
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="keep"
+              android:textSize="12sp"
+              android:textColor="#FF888888" />
+        </LinearLayout>
+      </LinearLayout>
 
       <TextView
           android:id="@+id/permission_text"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="12dp"
+          android:layout_marginTop="16dp"
           android:textColor="#FFFF6B6B"
           android:textSize="14sp"
           android:gravity="center_horizontal"
@@ -52,14 +107,15 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginTop="24dp"
-          android:text="@string/start_cleaning" />
+          android:text="@string/start_cleaning"
+          android:textSize="16sp" />
 
       <TextView
           android:id="@+id/cap_text"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginTop="16dp"
-          android:textColor="#88FFFFFF"
+          android:textColor="#66FFFFFF"
           android:textSize="12sp"
           android:gravity="center_horizontal" />
     </LinearLayout>
@@ -71,38 +127,44 @@
       android:layout_height="match_parent"
       android:visibility="gone">
 
-    <ImageView
-        android:id="@+id/card_image"
+    <FrameLayout
+        android:id="@+id/card_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter"
-        android:contentDescription="@string/app_name" />
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="80dp">
+
+      <ImageView
+          android:id="@+id/card_image"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:scaleType="fitCenter"
+          android:contentDescription="@string/app_name" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/delete_badge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|start"
-        android:layout_margin="16dp"
+        android:layout_gravity="center"
         android:text="@string/delete_overlay"
         android:textColor="#FFFF4444"
-        android:textSize="22sp"
+        android:textSize="28sp"
         android:textStyle="bold"
         android:visibility="gone"
-        android:rotation="-10" />
+        android:rotation="-15" />
 
     <TextView
         android:id="@+id/keep_badge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|end"
-        android:layout_margin="16dp"
+        android:layout_gravity="center"
         android:text="@string/keep_overlay"
         android:textColor="#FF44FF88"
-        android:textSize="22sp"
+        android:textSize="28sp"
         android:textStyle="bold"
         android:visibility="gone"
-        android:rotation="10" />
+        android:rotation="15" />
 
     <ProgressBar
         android:id="@+id/loading_bar"
@@ -114,15 +176,24 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="top">
+        android:orientation="horizontal"
+        android:layout_gravity="top"
+        android:paddingHorizontal="12dp"
+        android:paddingTop="8dp">
 
       <Button
           android:id="@+id/done_button"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_margin="12dp"
           android:text="@string/done" />
+
+      <Button
+          android:id="@+id/undo_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="8dp"
+          android:text="@string/undo_label"
+          android:visibility="gone" />
     </LinearLayout>
 
     <LinearLayout
@@ -130,7 +201,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_gravity="bottom"
-        android:padding="12dp"
+        android:padding="16dp"
         android:background="#66000000">
 
       <TextView
@@ -139,14 +210,14 @@
           android:layout_height="wrap_content"
           android:layout_weight="1"
           android:textColor="#EEFFFFFF"
-          android:textSize="12sp" />
+          android:textSize="14sp" />
 
       <TextView
           android:id="@+id/remaining_text"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:textColor="#AAFFFFFF"
-          android:textSize="12sp" />
+          android:textSize="14sp" />
     </LinearLayout>
   </FrameLayout>
 </FrameLayout>
