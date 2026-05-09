@@ -43,6 +43,9 @@ public class MainActivity : AppCompatActivity
     private Button? _startButton;
     private Button? _undoButton;
     private Button? _doneButton;
+    private View? _videoIndicator;
+    private TextView? _videoDurationText;
+    private ProgressBar? _deleteProgressBar;
 
     private int _index;
     private int _lastDeleteCount;
@@ -74,6 +77,9 @@ public class MainActivity : AppCompatActivity
         _startButton = FindViewById<Button>(Resource.Id.start_button);
         _undoButton = FindViewById<Button>(Resource.Id.undo_button);
         _doneButton = FindViewById<Button>(Resource.Id.done_button);
+        _videoIndicator = FindViewById(Resource.Id.video_indicator);
+        _videoDurationText = FindViewById<TextView>(Resource.Id.video_duration);
+        _deleteProgressBar = FindViewById<ProgressBar>(Resource.Id.delete_progress_bar);
 
         var cap = FindViewById<TextView>(Resource.Id.cap_text);
         cap!.Text = GetString(Resource.String.session_cap, MediaRepository.SessionLimit);
@@ -224,8 +230,22 @@ public class MainActivity : AppCompatActivity
             return;
         }
 
-        _loadingBar!.Visibility = ViewStates.Visible;
         var item = _queue[_index];
+        _loadingBar!.Visibility = ViewStates.Visible;
+
+        if (item.IsVideo)
+        {
+            long durationSec = (Java.Lang.JavaSystem.CurrentTimeMillis() / 1000) - item.DateAddedSec;
+            long videoDurationMs = GetVideoDuration(item.ContentUri);
+            string dur = FormatDuration(videoDurationMs / 1000);
+            _videoDurationText!.Text = dur;
+            _videoIndicator!.Visibility = ViewStates.Visible;
+        }
+        else
+        {
+            _videoIndicator!.Visibility = ViewStates.Gone;
+        }
+
         Task.Run(() =>
         {
             Bitmap? bmp = _repo!.LoadThumbnail(item);
@@ -243,6 +263,28 @@ public class MainActivity : AppCompatActivity
             });
         });
         UpdateHud();
+    }
+
+    private long GetVideoDuration(Uri uri)
+    {
+        try
+        {
+            using var retriever = new Android.Media.MediaMetadataRetriever();
+            retriever.SetDataSource(this, uri);
+            var dur = retriever.ExtractMetadata(Android.Media.MetadataKey.Duration);
+            return dur != null ? long.Parse(dur) : 0;
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+
+    private string FormatDuration(long seconds)
+    {
+        long m = seconds / 60;
+        long s = seconds % 60;
+        return $"{m}:{s:D2}";
     }
 
     private void UpdateHud()
@@ -441,6 +483,8 @@ public class MainActivity : AppCompatActivity
         }
 
         _lastDeleteCount = toDelete.Count;
+        _sessionLayout!.Visibility = ViewStates.Gone;
+        _deleteProgressBar!.Visibility = ViewStates.Visible;
 
         if (Build.VERSION.SdkInt >= BuildVersionCodes.R)
         {
