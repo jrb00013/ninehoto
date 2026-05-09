@@ -15,6 +15,7 @@ public sealed class MediaRepository(Context context)
     public const int SessionLimit = 200;
 
     private readonly ContentResolver _resolver = context.ContentResolver!;
+    private readonly ThumbnailCache _cache = ThumbnailCache.Instance(context);
 
     public IReadOnlyList<MediaItem> LoadRecentMedia()
     {
@@ -66,25 +67,21 @@ public sealed class MediaRepository(Context context)
 
     public Bitmap? LoadThumbnail(MediaItem item)
     {
-        try
-        {
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
-            {
-                var size = new Size(ThumbnailMaxPx, ThumbnailMaxPx);
-                return _resolver.LoadThumbnail(item.ContentUri, size, null);
-            }
+        return _cache.Load(item.Id, item.ContentUri, ThumbnailMaxPx);
+    }
 
-            using var stream = _resolver.OpenInputStream(item.ContentUri);
-            if (stream == null)
-            {
-                return null;
-            }
-
-            return BitmapFactory.DecodeStream(stream);
-        }
-        catch
+    public void PrefetchFrom(int startIndex, IReadOnlyList<MediaItem> queue)
+    {
+        int end = Math.Min(startIndex + 5, queue.Count);
+        for (int i = startIndex; i < end; i++)
         {
-            return null;
+            var item = queue[i];
+            if (_cache.Get(item.Id) == null)
+            {
+                _ = _cache.Load(item.Id, item.ContentUri, ThumbnailMaxPx);
+            }
         }
     }
+
+    public void ClearCache() => _cache.Clear();
 }
