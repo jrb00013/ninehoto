@@ -28,6 +28,8 @@ public class MainActivity : AppCompatActivity
     private MediaRepository? _repo;
     private readonly List<MediaItem> _queue = new();
     private readonly HashSet<long> _pendingDeleteIds = new();
+    private readonly List<(int index, long id)> _undoStack = new();
+    private readonly List<long> _reversedStack = new();
 
     private View? _menuScroll;
     private View? _sessionLayout;
@@ -39,10 +41,17 @@ public class MainActivity : AppCompatActivity
     private TextView? _permissionText;
     private ProgressBar? _loadingBar;
     private Button? _startButton;
+    private Button? _undoButton;
+    private Button? _doneButton;
 
     private int _index;
     private int _lastDeleteCount;
     private bool _permissionRequestedOnce;
+    private float _cardScale = 1f;
+    private ObjectAnimator? _scaleAnimator;
+
+    private Vibrator? _vibrator;
+    private readonly Android.Views.Animations.Animation? _cardEnterAnim;
 
     protected override void OnCreate(Bundle? savedInstanceState)
     {
@@ -51,6 +60,7 @@ public class MainActivity : AppCompatActivity
         SetContentView(Resource.Layout.activity_main);
 
         _repo = new MediaRepository(this);
+        _vibrator = GetSystemService(Context.VibratorService) as Vibrator;
 
         _menuScroll = FindViewById(Resource.Id.menu_scroll);
         _sessionLayout = FindViewById(Resource.Id.session_layout);
@@ -62,18 +72,22 @@ public class MainActivity : AppCompatActivity
         _permissionText = FindViewById<TextView>(Resource.Id.permission_text);
         _loadingBar = FindViewById<ProgressBar>(Resource.Id.loading_bar);
         _startButton = FindViewById<Button>(Resource.Id.start_button);
+        _undoButton = FindViewById<Button>(Resource.Id.undo_button);
+        _doneButton = FindViewById<Button>(Resource.Id.done_button);
 
         var cap = FindViewById<TextView>(Resource.Id.cap_text);
         cap!.Text = GetString(Resource.String.session_cap, MediaRepository.SessionLimit);
 
         _startButton!.Click += (_, _) => TryStartSession();
-        FindViewById<Button>(Resource.Id.done_button)!.Click += (_, _) => ShowFinishDialog();
+        _doneButton!.Click += (_, _) => ShowFinishDialog();
+        _undoButton!.Click += (_, _) => UndoLastSwipe();
+        _undoButton!.Visibility = ViewStates.Gone;
 
         _cardImage!.SetOnTouchListener(new SwipeTouchListener(
             onSwipeLeft: HandleSwipeLeft,
             onSwipeRight: HandleSwipeRight,
             onDrag: UpdateBadges,
-            onCancelDrag: HideBadges));
+            onCancelDrag: ResetCard));
 
         UpdatePermissionBanner();
         ShowMenu();
@@ -161,6 +175,8 @@ public class MainActivity : AppCompatActivity
                 _queue.Clear();
                 _queue.AddRange(items);
                 _pendingDeleteIds.Clear();
+                _undoStack.Clear();
+                _reversedStack.Clear();
                 _index = 0;
                 if (_queue.Count == 0)
                 {
@@ -171,6 +187,7 @@ public class MainActivity : AppCompatActivity
 
                 ShowSessionUi();
                 BindCurrentCard();
+                PrefetchNext();
             });
         });
     }
@@ -181,7 +198,10 @@ public class MainActivity : AppCompatActivity
         _sessionLayout!.Visibility = ViewStates.Gone;
         _queue.Clear();
         _pendingDeleteIds.Clear();
+        _undoStack.Clear();
+        _reversedStack.Clear();
         _index = 0;
+        _repo?.ClearCache();
         UpdatePermissionBanner();
     }
 
@@ -189,13 +209,15 @@ public class MainActivity : AppCompatActivity
     {
         _menuScroll!.Visibility = ViewStates.Gone;
         _sessionLayout!.Visibility = ViewStates.Visible;
+        _undoButton!.Visibility = ViewStates.Gone;
         UpdateHud();
     }
 
     private void BindCurrentCard()
     {
-        HideBadges();
-        _cardImage!.TranslationX = 0f;
+        ResetCard();
+        _cardImage!.ScaleX = 1f;
+        _cardImage!.ScaleY = 1f;
         if (_index >= _queue.Count)
         {
             ShowFinishDialog();
@@ -228,6 +250,22 @@ public class MainActivity : AppCompatActivity
         int remaining = Math.Max(0, _queue.Count - _index);
         _markedText!.Text = GetString(Resource.String.marked_delete, _pendingDeleteIds.Count);
         _remainingText!.Text = GetString(Resource.String.remaining, remaining);
+        _undoButton!.Visibility = _undoStack.Count > 0 ? ViewStates.Visible : ViewStates.Gone;
+    }
+
+    private void HapticFeedback()
+    {
+        if (_vibrator != null && _vibrator.HasVibrator)
+        {
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
+            {
+                _vibrator.Vibrate(VibrationEffect.CreateOneShot(50, VibrationEffect.DefaultAmplitude));
+            }
+            else
+            {
+                _vibrator.Vibrate(50);
+            }
+        }
     }
 
     private void HandleSwipeLeft()
@@ -237,9 +275,25 @@ public class MainActivity : AppCompatActivity
             return;
         }
 
-        _pendingDeleteIds.Add(_queue[_index].Id);
+        HapticFeedback();
+        var item = _queue[_index];
+        if (!_pendingDeleteIds.Contains(item.Id))
+        {
+            _pendingDeleteIds.Add(item.Id);
+            _undoStack.Add((_index, item.Id));
+            _reversedStack.Add(item.Id);
+        }
         _index++;
-        BindCurrentCard();
+        UpdateHud();
+        if (_index < _queue.Count)
+        {
+            BindCurrentCard();
+            PrefetchNext();
+        }
+        else
+        {
+            ShowFinishDialog();
+        }
     }
 
     private void HandleSwipeRight()
@@ -249,8 +303,64 @@ public class MainActivity : AppCompatActivity
             return;
         }
 
+        HapticFeedback();
+        var item = _queue[_index];
+        if (_pendingDeleteIds.Contains(item.Id))
+        {
+            _pendingDeleteIds.Remove(item.Id);
+            _undoStack.Add((_index, item.Id));
+            _reversedStack.Add(item.Id);
+        }
         _index++;
-        BindCurrentCard();
+        UpdateHud();
+        if (_index < _queue.Count)
+        {
+            BindCurrentCard();
+            PrefetchNext();
+        }
+        else
+        {
+            ShowFinishDialog();
+        }
+    }
+
+    private void UndoLastSwipe()
+    {
+        if (_undoStack.Count == 0)
+        {
+            return;
+        }
+
+        HapticFeedback();
+        var last = _undoStack[^1];
+        _undoStack.RemoveAt(_undoStack.Count - 1);
+
+        if (_index != last.index && last.index < _queue.Count)
+        {
+            _index = last.index;
+            BindCurrentCard();
+        }
+
+        if (_pendingDeleteIds.Contains(last.id))
+        {
+            _pendingDeleteIds.Remove(last.id);
+        }
+        else
+        {
+            _pendingDeleteIds.Add(last.id);
+        }
+
+        UpdateHud();
+    }
+
+    private void PrefetchNext()
+    {
+        if (_repo == null || _queue.Count == 0)
+        {
+            return;
+        }
+
+        Task.Run(() => _repo.PrefetchFrom(_index, _queue));
     }
 
     private void UpdateBadges(float dx)
@@ -260,8 +370,19 @@ public class MainActivity : AppCompatActivity
             return;
         }
 
+        float progress = Math.Min(Math.Abs(dx) / SwipeThresholdPx, 1f);
         _deleteBadge.Visibility = dx < -40f ? ViewStates.Visible : ViewStates.Gone;
         _keepBadge.Visibility = dx > 40f ? ViewStates.Visible : ViewStates.Gone;
+        _cardImage!.ScaleX = 1f - progress * 0.05f;
+        _cardImage!.ScaleY = 1f - progress * 0.05f;
+    }
+
+    private void ResetCard()
+    {
+        _cardImage!.TranslationX = 0f;
+        _cardImage!.ScaleX = 1f;
+        _cardImage!.ScaleY = 1f;
+        HideBadges();
     }
 
     private void HideBadges()
@@ -353,7 +474,6 @@ public class MainActivity : AppCompatActivity
                 }
                 catch
                 {
-                    // ignore single failure
                 }
             }
 
