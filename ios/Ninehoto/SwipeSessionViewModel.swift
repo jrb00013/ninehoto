@@ -20,6 +20,7 @@ final class SwipeSessionViewModel: ObservableObject {
     @Published var showResultAlert = false
     @Published var resultMessage = ""
     @Published var isLoading = false
+    @Published private(set) var canUndo: Bool = false
 
     private let photoService = PhotoLibraryService()
 
@@ -44,6 +45,8 @@ final class SwipeSessionViewModel: ObservableObject {
     var pendingDeleteCount: Int {
         pendingDeletionIds.count
     }
+
+    private var undoStack: [(index: Int, id: String)] = []
 
     init() {
         authorizationState = photoService.currentAuthorizationStatus()
@@ -77,17 +80,56 @@ final class SwipeSessionViewModel: ObservableObject {
         assets = fetched
         currentIndex = 0
         pendingDeletionIds = []
+        undoStack = []
+        canUndo = false
         phase = .swiping
+
+        await prefetchNext()
+    }
+
+    private func prefetchNext() async {
+        let start = currentIndex
+        let end = min(start + 5, assets.count)
+        guard end > start else { return }
+        let toPrefetch = Array(assets[start..<end])
+        await ThumbnailCache.shared.prefetch(toPrefetch, service: photoService)
     }
 
     func swipeLeft() {
         guard let asset = currentAsset else { return }
-        pendingDeletionIds.insert(asset.localIdentifier)
+        let id = asset.localIdentifier
+        if !pendingDeletionIds.contains(id) {
+            pendingDeletionIds.insert(id)
+            undoStack.append((currentIndex, id))
+            canUndo = true
+        }
         advance()
+        Task { await prefetchNext() }
     }
 
     func swipeRight() {
+        guard let asset = currentAsset else { return }
+        let id = asset.localIdentifier
+        if pendingDeletionIds.contains(id) {
+            pendingDeletionIds.remove(id)
+            undoStack.append((currentIndex, id))
+            canUndo = true
+        }
         advance()
+        Task { await prefetchNext() }
+    }
+
+    func undoLastSwipe() {
+        guard let last = undoStack.popLast() else { return }
+        if currentIndex != last.index {
+            currentIndex = last.index
+        }
+        if pendingDeletionIds.contains(last.id) {
+            pendingDeletionIds.remove(last.id)
+        } else {
+            pendingDeletionIds.insert(last.id)
+        }
+        canUndo = !undoStack.isEmpty
     }
 
     private func advance() {
@@ -133,6 +175,9 @@ final class SwipeSessionViewModel: ObservableObject {
         assets = []
         currentIndex = 0
         pendingDeletionIds = []
+        undoStack = []
+        canUndo = false
+        Task { await ThumbnailCache.shared.clear() }
     }
 
     func backToMenuWithoutDeleting() {
