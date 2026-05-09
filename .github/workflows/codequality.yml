@@ -1,0 +1,99 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  swiftlint:
+    name: SwiftLint (iOS)
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: SwiftLint
+        run: |
+          if command -v swiftlint &>/dev/null; then
+            swiftlint --config ios/.swiftlint.yml
+          else
+            echo "Installing swiftlint..."
+            brew install swiftlint
+            swiftlint --config ios/.swiftlint.yml
+          fi
+
+  ios-build-check:
+    name: iOS Build Check
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: |
+          cd ios && xcodegen generate
+
+      - name: Build iOS
+        run: |
+          xcodebuild -project ios/Ninehoto.xcodeproj \
+            -scheme Ninehoto \
+            -configuration Debug \
+            -destination 'generic platform=iOS Simulator' \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+  android-check:
+    name: Android Gradle Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Gradle Check
+        run: |
+          cd android && ./gradlew check --no-daemon 2>&1 | tail -20
+
+  file-checks:
+    name: File & Format Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check for debug output / TODO comments
+        run: |
+          echo "=== Checking for console.log / print statements ==="
+          ! grep -r "console.log\|Swift\.print\|System\.Debug\|Android\.Util\.Log" \
+            --include="*.swift" --include="*.cs" \
+            ios/ android/Ninehoto.Android/ 2>/dev/null || true
+
+          echo "=== Checking for TODO/FIXME in production code ==="
+          ! grep -rn "TODO:\|FIXME:\|HACK:" \
+            --include="*.swift" --include="*.cs" \
+            ios/Ninehoto/ android/Ninehoto.Android/ 2>/dev/null || true
+
+          echo "=== Checking for hardcoded secrets ==="
+          ! grep -rn "api_key\|secret\|password\s*=" \
+            --include="*.swift" --include="*.cs" --include="*.yml" \
+            --exclude="*.xcodeproj" --exclude="project.yml" \
+            ios/Ninehoto/ android/Ninehoto.Android/ 2>/dev/null || true
