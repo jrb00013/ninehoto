@@ -1,0 +1,27 @@
+# Build outputs
+*.apk
+*.aab
+*.app
+*.ipa
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+*.class
+
+# Android Studio / IntelliJ
+*.iml
+.idea/
+local.properties
+
+# Xcode
+*.xcuserstate
+*.xcworkspace
+DerivedData/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
