@@ -1,27 +1,59 @@
-# Build outputs
+# Build output directories
 *.apk
 *.aab
 *.app
 *.ipa
+*.xcarchive
+*.dSYM
+build/
+out/
 
 # Gradle
 .gradle/
-build/
+gradle-*
 !gradle/wrapper/gradle-wrapper.jar
 *.class
+local.properties
 
 # Android Studio / IntelliJ
 *.iml
 .idea/
-local.properties
+*.iws
+*.ipr
 
 # Xcode
 *.xcuserstate
 *.xcworkspace
+*.xccheckout
 DerivedData/
+Ninehoto.app/
+*.mobileprovision
+
+# iOS signing
+Signing*.mobileprovision
+*_ Codesigning.plist
+
+# SwiftLint
+/.swiftlint.yml
 
 # macOS
 .DS_Store
+.AppleDouble
+.LSOverride
 
 # Logs
 *.log
+logs/
+
+# Temporary files
+*.swp
+*.swo
+*~
+
+# CocoaPods (if used)
+ios/Pods/
+ios/Podfile.lock
+
+# Android emulator
+~/.android/
+*.lock
