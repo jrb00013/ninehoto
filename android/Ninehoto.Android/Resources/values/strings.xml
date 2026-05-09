@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">ninehoto</string>
+  <string name="start_cleaning">Start</string>
+  <string name="main_blurb">Swipe left to lose it, right to keep it. Tap Done when you are finished — nothing is removed until you confirm.</string>
+  <string name="session_cap">Showing up to %1$d newest photos and videos.</string>
+  <string name="done">Done</string>
+  <string name="marked_delete">Marked to delete: %1$d</string>
+  <string name="remaining">Remaining: %1$d</string>
+  <string name="permission_denied">Photo and video access was denied. Enable it in Settings to use this app.</string>
+  <string name="delete_confirm_title">Delete %1$d item(s)?</string>
+  <string name="end_session_title">End session?</string>
+  <string name="delete_confirm_message">This removes items from your library. Unreviewed items stay unchanged.</string>
+  <string name="end_session_message">No items are marked for deletion. Unreviewed items stay unchanged.</string>
+  <string name="delete_action">Delete %1$d item(s)</string>
+  <string name="back_to_menu">Back to main menu</string>
+  <string name="cancel">Cancel</string>
+  <string name="delete_overlay">DELETE</string>
+  <string name="keep_overlay">KEEP</string>
+  <string name="result_title">Result</string>
+  <string name="deleted_count">Deleted %1$d item(s).</string>
+  <string name="delete_failed">Delete failed or was cancelled: %1$s</string>
+  <string name="loading">Loading…</string>
+  <string name="empty_gallery">No photos or videos found on this device.</string>
+</resources>
