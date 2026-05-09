@@ -1,0 +1,19 @@
+# Set default language for repository statistics
+* linguist-language=Swift
+
+# Auto-detect language
+*.cs linguist-language=C#
+*.swift linguist-language=Swift
+*.xml linguist-language=XML
+*.yml linguist-language=YAML
+*.gradle linguist-language=Groovy
+
+# Ensure shell scripts are detected
+*.sh linguist-language=Shell
+
+# Exclude binary files from language stats
+*.png binary
+*.jpg binary
+*.jar binary
+*.apk binary
+*.aab binary
