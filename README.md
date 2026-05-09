@@ -41,3 +41,20 @@ Or build from command line:
 ```bash
 xcodebuild -project Ninehoto.xcodeproj -scheme Ninehoto -configuration Debug -destination 'generic platform=iOS Simulator' build
 ```
+
+## Project Structure
+
+```
+ninehoto/
+├── android/
+│   ├── Ninehoto.Android/     # Android app (Xamarin/C#)
+│   ├── build.gradle           # Root Gradle config
+│   ├── settings.gradle
+│   ├── gradle.properties
+│   └── gradlew
+└── ios/
+    ├── Ninehoto/              # iOS app (SwiftUI)
+    ├── Ninehoto.xcodeproj/
+    ├── project.yml            # XcodeGen config
+    └── *.swift
+```
