@@ -28,6 +28,11 @@
 		F10700000000000000001 /* ThumbnailCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCache.swift; sourceTree = "<group>"; };
 		F10800000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F10900000000000000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F10A00000000000000001 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		F10B00000000000000001 /* NinehotoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NinehotoTests.swift; sourceTree = "<group>"; };
+		F10C00000000000000001 /* SwipeSessionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeSessionViewModelTests.swift; sourceTree = "<group>"; };
+		F10D00000000000000001 /* ThumbnailCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCacheTests.swift; sourceTree = "<group>"; };
+		F10E00000000000000001 /* PhotoLibraryServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryServiceTests.swift; sourceTree = "<group>"; };
 / * End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,7 +64,12 @@
 				F10500000000000000001 /* PhotoLibraryService.swift */,
 				F10600000000000000001 /* SwipeDeckView.swift */,
 				F10700000000000000001 /* ThumbnailCache.swift */,
-				F10800000000000000001 /* Assets.xcassets */,
+				F10800000000000000000001 /* Assets.xcassets */,
+				F10A00000000000000001 /* LaunchScreen.storyboard */,
+				F10B00000000000000001 /* NinehotoTests.swift */,
+				F10C00000000000000001 /* SwipeSessionViewModelTests.swift */,
+				F10D00000000000000001 /* ThumbnailCacheTests.swift */,
+				F10E00000000000000001 /* PhotoLibraryServiceTests.swift */,
 				F10900000000000000001 /* Info.plist */,
 			);
 			path = Ninehoto;
@@ -132,6 +142,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B10800000000000000001 /* Assets.xcassets in Resources */,
+				B10900000000000000001 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -213,6 +224,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Ninehoto/Info.plist;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -237,6 +249,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Ninehoto/Info.plist;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
