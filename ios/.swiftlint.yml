@@ -1,0 +1,23 @@
+# .swiftlint.yml
+# SwiftLint configuration for ninehoto iOS project
+# Run: swiftlint
+
+disabled_rules:
+  - trailing_whitespace
+  - file_length
+  - function_body_length
+  - type_body_length
+  - line_length
+
+excluded:
+  - Ninehoto.xcodeproj
+  - Ninehoto.app
+  - DerivedData
+  - NinehotoTests
+
+opt_in_rules:
+  - empty_count
+  - closure_spacing
+
+warning_threshold: 10
+error_threshold: 20
