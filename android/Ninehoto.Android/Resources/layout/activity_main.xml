@@ -121,11 +121,11 @@
     </LinearLayout>
   </ScrollView>
 
-  <FrameLayout
-      android:id="@+id/session_layout"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:visibility="gone">
+    <FrameLayout
+        android:id="@+id/session_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
     <FrameLayout
         android:id="@+id/card_container"
@@ -134,12 +134,56 @@
         android:layout_marginTop="60dp"
         android:layout_marginBottom="80dp">
 
-      <ImageView
-          android:id="@+id/card_image"
+      <androidx.cardview.widget.CardView
+          android:id="@+id/card_wrapper"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          android:scaleType="fitCenter"
-          android:contentDescription="@string/app_name" />
+          android:layout_margin="8dp"
+          app:cardCornerRadius="16dp"
+          app:cardElevation="8dp"
+          app:cardBackgroundColor="#FF111111"
+          xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+          <ImageView
+              android:id="@+id/card_image"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:scaleType="fitCenter"
+              android:contentDescription="@string/app_name" />
+
+          <LinearLayout
+              android:id="@+id/video_indicator"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="bottom|end"
+              android:layout_margin="16dp"
+              android:orientation="horizontal"
+              android:gravity="center_vertical"
+              android:paddingHorizontal="10dp"
+              android:paddingVertical="6dp"
+              android:background="@drawable/video_badge_bg"
+              android:visibility="gone">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@android:drawable/ic_media_play"
+                android:tint="#FFFFFFFF" />
+
+            <TextView
+                android:id="@+id/video_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFFFF"
+                android:textSize="12sp"
+                android:layout_marginStart="4dp" />
+          </LinearLayout>
+        </FrameLayout>
+      </androidx.cardview.widget.CardView>
     </FrameLayout>
 
     <TextView
@@ -172,6 +216,29 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/delete_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="#FF000000"
+        android:visibility="gone">
+
+      <ProgressBar
+          android:layout_width="48dp"
+          android:layout_height="48dp"
+          android:indeterminate="true" />
+
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="16dp"
+          android:text="@string/deleting"
+          android:textColor="#FFFFFFFF"
+          android:textSize="16sp" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
