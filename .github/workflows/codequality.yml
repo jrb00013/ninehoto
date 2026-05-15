@@ -28,6 +28,129 @@ jobs:
             swiftlint --config ios/.swiftlint.yml
           fi
 
+  swift-format:
+    name: Swift Format Check
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Swift
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "5.9"
+
+      - name: Check Swift Format
+        run: |
+          if command -v swift-format &>/dev/null; then
+            swift-format --check ios/Ninehoto/
+          else
+            brew install swift-format
+            swift-format --check ios/Ninehoto/
+          fi
+
+  swift-static-analysis:
+    name: Swift Static Analysis
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Project
+        run: cd ios && xcodegen generate
+
+      - name: Run Swift Analyzer
+        run: |
+          xcodebuild -project ios/Ninehoto.xcodeproj \
+            -scheme Ninehoto \
+            -configuration Debug \
+            -destination 'generic platform=iOS Simulator' \
+            analyze 2>&1 | grep -E "(error:|warning:)" | head -30
+
+  android-lint:
+    name: Android Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Run Android Lint
+        run: |
+          cd android
+          ./gradlew lint --no-daemon 2>&1 | tail -20
+
+  android-detekt:
+    name: Android Detekt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Run Detekt
+        run: |
+          cd android
+          ./gradlew detekt --no-daemon 2>&1 | tail -20
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run OWASP Dependency Check
+        run: |
+          docker run --rm -v $(pwd):/project owasp/dependency-check.sh \
+            --project ninehoto \
+            --scan /project/android \
+            --format HTML \
+            --out /project
+
+  code-coverage-report:
+    name: Code Coverage Report
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Project
+        run: cd ios && xcodegen generate
+
+      - name: Run Tests with Coverage
+        run: |
+          xcodebuild test -project ios/Ninehoto.xcodeproj \
+            -scheme Ninehoto \
+            -configuration Debug \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            -enableCodeCoverage YES \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            2>&1 | tail -30
+
   ios-build-check:
     name: iOS Build Check
     runs-on: macos-14

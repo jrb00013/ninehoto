@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="?android:colorBackground">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?colorPrimary"
+        android:elevation="4dp" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Preferences Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Preferences"
+                android:textAppearance="?textAppearanceTitleSmall"
+                android:textColor="?colorPrimary"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switch_haptic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Haptic Feedback"
+                android:padding="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thumbnail Quality"
+                android:textAppearance="?textAppearanceBodyMedium"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp" />
+
+            <RadioGroup
+                android:id="@+id/radio_thumbnail_quality"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="12dp">
+
+                <RadioButton
+                    android:id="@+id/radio_quality_low"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Low (Fast)" />
+
+                <RadioButton
+                    android:id="@+id/radio_quality_medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Medium"
+                    android:checked="true" />
+
+                <RadioButton
+                    android:id="@+id/radio_quality_high"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="High (Slow)" />
+            </RadioGroup>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sort Order"
+                android:textAppearance="?textAppearanceBodyMedium"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp" />
+
+            <RadioGroup
+                android:id="@+id/radio_sort_order"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="12dp">
+
+                <RadioButton
+                    android:id="@+id/radio_sort_newest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Newest First"
+                    android:checked="true" />
+
+                <RadioButton
+                    android:id="@+id/radio_sort_oldest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Oldest First" />
+
+                <RadioButton
+                    android:id="@+id/radio_sort_recent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Recently Added" />
+            </RadioGroup>
+
+            <!-- Data Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Data"
+                android:textAppearance="?textAppearanceTitleSmall"
+                android:textColor="?colorPrimary"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp" />
+
+            <Button
+                android:id="@+id/btn_reset_stats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reset Statistics"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:textColor="@color/error_color" />
+
+            <Button
+                android:id="@+id/btn_clear_cache"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Clear Cache"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:textColor="@color/error_color"
+                android:layout_marginTop="8dp" />
+
+            <!-- About Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="About"
+                android:textAppearance="?textAppearanceTitleSmall"
+                android:textColor="?colorPrimary"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Version" />
+
+                <TextView
+                    android:id="@+id/text_version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:textColorSecondary" />
+            </LinearLayout>
+
+            <!-- Debug Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Debug"
+                android:textAppearance="?textAppearanceTitleSmall"
+                android:textColor="?colorPrimary"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switch_debug_logging"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Debug Logging"
+                android:padding="12dp" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switch_perf_metrics"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Performance Metrics"
+                android:padding="12dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

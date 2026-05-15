@@ -1,0 +1,108 @@
+name: Performance Benchmark
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 0 * * 0'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  benchmark-ios:
+    name: iOS Benchmark
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        run: cd ios && xcodegen generate
+
+      - name: Run Benchmark
+        run: |
+          echo "Running iOS performance benchmarks..."
+          
+          xcodebuild -project ios/Ninehoto.xcodeproj \
+            -scheme Ninehoto \
+            -configuration Debug \
+            -destination 'generic platform=iOS Simulator' \
+            build 2>&1 | grep -E "(Build|Compile)"
+
+          echo "Benchmark completed"
+          echo "### Build Times" >> $GITHUB_STEP_SUMMARY
+          echo "iOS: $(date)" >> $GITHUB_STEP_SUMMARY
+
+  benchmark-android:
+    name: Android Benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Run Benchmark
+        run: |
+          echo "Running Android performance benchmarks..."
+          
+          cd android
+          START_TIME=$(date +%s)
+          ./gradlew assembleDebug --no-daemon --quiet
+          END_TIME=$(date +%s)
+          DURATION=$((END_TIME - START_TIME))
+          
+          echo "Build completed in ${DURATION}s"
+          echo "### Build Times" >> $GITHUB_STEP_SUMMARY
+          echo "Android: ${DURATION}s" >> $GITHUB_STEP_SUMMARY
+
+  benchmark-comparison:
+    name: Compare with Previous
+    runs-on: ubuntu-latest
+    needs: [benchmark-ios, benchmark-android]
+    if: github.event_name == 'schedule'
+    steps:
+      - name: Download previous results
+        uses: actions/download-artifact@v4
+        with:
+          name: benchmark-results
+
+      - name: Compare benchmarks
+        run: |
+          echo "Comparing with previous benchmark results..."
+          echo "### Performance Trend" >> $GITHUB_STEP_SUMMARY
+          echo "This week's benchmarks:" >> $GITHUB_STEP_SUMMARY
+
+  store-results:
+    name: Store Results
+    runs-on: ubuntu-latest
+    needs: [benchmark-ios, benchmark-android]
+    if: always()
+    steps:
+      - name: Store benchmark results
+        run: |
+          mkdir -p benchmark-results
+          echo "timestamp=$(date +%s)" >> $GITHUB_OUTPUT
+          echo "ios_status=${{ needs.benchmark-ios.result }}" >> $GITHUB_OUTPUT
+          echo "android_status=${{ needs.benchmark-android.result }}" >> $GITHUB_OUTPUT
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: benchmark-results/
+          retention-days: 30

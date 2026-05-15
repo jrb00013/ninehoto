@@ -1,0 +1,164 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 1.2.3)'
+        required: true
+      prerelease:
+        description: 'Pre-release?'
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-version:
+    name: Validate Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract version
+        id: version
+        run: |
+          if [[ "${{ github.event.inputs.version }}" != "" ]]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            VERSION=${GITHUB_REF#refs/tags/v}
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Validate version format
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version format: $VERSION"
+            exit 1
+          fi
+
+  ios-build:
+    name: iOS Build
+    runs-on: macos-14
+    needs: validate-version
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        run: |
+          sudo xcode-select -s /Applications/Xcode_15.app
+
+      - name: Install dependencies
+        run: |
+          brew install xcodegen
+
+      - name: Generate project
+        run: cd ios && xcodegen generate
+
+      - name: Build iOS
+        env:
+          VERSION: ${{ needs.validate-version.outputs.version }}
+        run: |
+          xcodebuild -project ios/Ninehoto.xcodeproj \
+            -scheme Ninehoto \
+            -configuration Release \
+            -destination 'generic platform=iOS Simulator' \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Create IPA
+        env:
+          VERSION: ${{ needs.validate-version.outputs.version }}
+        run: |
+          mkdir -p dist
+          xcodebuild -project ios/Ninehoto.xcodeproj \
+            -scheme Ninehoto \
+            -configuration Release \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            -derivedDataPath build \
+            -archivePath build/Ninehoto.xcarchive \
+            archive
+          xcodebuild -exportArchive \
+            -archivePath build/Ninehoto.xcarchive \
+            -exportOptionsPlist ios/ExportOptions.plist \
+            -exportPath dist \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: ninehoto-ios-ipa
+          path: dist/Ninehoto.ipa
+          retention-days: 30
+
+  android-build:
+    name: Android Build
+    runs-on: ubuntu-latest
+    needs: validate-version
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Build Android
+        env:
+          VERSION: ${{ needs.validate-version.outputs.version }}
+        run: |
+          cd android
+          ./gradlew assembleRelease --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ninehoto-android-apk
+          path: android/Ninehoto.Android/bin/Release/net8.0-android/apk/release/*.apk
+          retention-days: 30
+
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [validate-version, ios-build, android-build]
+    if: github.event_name == 'push'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.validate-version.outputs.version }}
+          name: Release v${{ needs.validate-version.outputs.version }}
+          draft: true
+          files: |
+            artifacts/ninehoto-ios-ipa/*
+            artifacts/ninehoto-android-apk/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

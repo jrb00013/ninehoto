@@ -1,4 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <!-- App Theme Colors -->
   <color name="ic_launcher_bg">#1A237E</color>
+  <color name="primary">#1A237E</color>
+  <color name="primary_dark">#000051</color>
+  <color name="accent">#536DFE</color>
+  
+  <!-- Status Colors -->
+  <color name="success_color">#4CAF50</color>
+  <color name="error_color">#F44336</color>
+  <color name="warning_color">#FF9800</color>
+  
+  <!-- Swipe Indicator Colors -->
+  <color name="delete_red">#FF5252</color>
+  <color name="keep_green">#69F0AE</color>
+  <color name="swipe_yellow">#FFD740</color>
+  
+  <!-- Background Colors -->
+  <color name="background_dark">#121212</color>
+  <color name="surface_dark">#1E1E1E</color>
+  <color name="card_dark">#2D2D2D</color>
+  
+  <!-- Text Colors -->
+  <color name="text_primary">#FFFFFF</color>
+  <color name="text_secondary">#B3B3B3</color>
+  <color name="text_hint">#757575</color>
+  
+  <!-- Overlay Colors -->
+  <color name="overlay_dark">#80000000</color>
+  <color name="overlay_light">#40FFFFFF</color>
+  
+  <!-- Transparent -->
+  <color name="transparent">#00000000</color>
 </resources>

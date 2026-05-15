@@ -57,3 +57,37 @@ ios/Podfile.lock
 # Android emulator
 ~/.android/
 *.lock
+
+# Swift Package Manager
+.swiftpm/
+Packages/
+Package.resolved
+
+# Derived data
+.gen/
+ios/build/
+android/Ninehoto.Android/bin/
+android/Ninehoto.Android/obj/
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Test reports
+test-reports/
+coverage/
+*.gcov
+
+# CI scripts (keep scripts in repo, but not generated outputs)
+scripts/*.log
+scripts/*.tmp
+scripts/output/
+
+# Benchmark results
+benchmark-results/
+
+# Release artifacts
+releases/
+dist/
