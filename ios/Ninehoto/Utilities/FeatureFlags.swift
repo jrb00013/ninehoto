@@ -17,6 +17,8 @@ struct FeatureFlags {
     // Experimental Features
     var isThumbnailPrefetchEnabled: Bool { getBool("thumbnail_prefetch", default: true) }
     var isSmartSortEnabled: Bool { getBool("smart_sort", default: false) }
+    var isBurstGroupingEnabled: Bool { getBool("burst_grouping", default: true) }
+    var isStoragePreviewEnabled: Bool { getBool("storage_preview", default: true) }
     var isBatchDeleteEnabled: Bool { getBool("batch_delete", default: true) }
     var isSessionAnalyticsEnabled: Bool { getBool("session_analytics", default: false) }
 
@@ -24,6 +26,7 @@ struct FeatureFlags {
     var isDarkModeOnly: Bool { getBool("dark_mode_only", default: true) }
     var isAnimatedTransitionsEnabled: Bool { getBool("animated_transitions", default: true) }
     var isPullToRefreshEnabled: Bool { getBool("pull_to_refresh", default: false) }
+    var isTripFilteringEnabled: Bool { getBool("trip_filtering", default: true) }
 
     // Debug Features
     var isDebugLoggingEnabled: Bool { getBool("debug_logging", default: false) }
@@ -58,18 +61,21 @@ struct FeatureFlags {
 }
 
 // Feature flag names for easy reference
-enum FeatureName: String {
+enum FeatureName: String, CaseIterable {
     case swipeUndo = "swipe_undo"
     case videoSupport = "video_support"
     case hapticFeedback = "haptic_feedback"
     case fullscreenPreview = "fullscreen_preview"
     case thumbnailPrefetch = "thumbnail_prefetch"
     case smartSort = "smart_sort"
+    case burstGrouping = "burst_grouping"
+    case storagePreview = "storage_preview"
     case batchDelete = "batch_delete"
     case sessionAnalytics = "session_analytics"
     case darkModeOnly = "dark_mode_only"
     case animatedTransitions = "animated_transitions"
     case pullToRefresh = "pull_to_refresh"
+    case tripFiltering = "trip_filtering"
     case debugLogging = "debug_logging"
     case performanceMetrics = "performance_metrics"
     case mockData = "mock_data"

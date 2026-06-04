@@ -64,6 +64,24 @@ enum LocaleKey: String {
     case sortNewestFirst = "sort_newest_first"
     case sortOldestFirst = "sort_oldest_first"
     case sortRecentlyAdded = "sort_recently_added"
+
+    // Storage Preview
+    case fileSizeLabel = "file_size_label"
+    case spaceFreedFormat = "space_freed_format"
+    case deleteCountWithSize = "delete_count_with_size"
+    case spaceSavedStat = "space_saved_stat"
+
+    // Burst & Duplicate Grouping
+    case burstLabel = "burst_label"
+    case duplicateLabel = "duplicate_label"
+    case burstGrouping = "burst_grouping"
+
+    // Trip / Location Filtering
+    case filterPhotos = "filter_photos"
+    case filterByAlbum = "filter_by_album"
+    case filterByTrip = "filter_by_trip"
+    case allPhotos = "all_photos"
+    case tripFiltering = "trip_filtering"
 }
 
 final class LocalizationManager {
@@ -122,7 +140,19 @@ final class LocalizationManager {
             .qualityHigh: "High (Slow)",
             .sortNewestFirst: "Newest First",
             .sortOldestFirst: "Oldest First",
-            .sortRecentlyAdded: "Recently Added"
+            .sortRecentlyAdded: "Recently Added",
+            .fileSizeLabel: "%@",
+            .spaceFreedFormat: "Free up %@",
+            .deleteCountWithSize: "Delete %d items (%@)",
+            .spaceSavedStat: "Space saved: %@",
+            .burstLabel: "Burst · %d",
+            .duplicateLabel: "%d duplicates",
+            .burstGrouping: "Burst Grouping",
+            .filterPhotos: "Filter Photos",
+            .filterByAlbum: "Albums",
+            .filterByTrip: "Trips",
+            .allPhotos: "All photos (no filter)",
+            .tripFiltering: "Trip Filtering"
         ]
 
         translations["es"] = [
@@ -163,7 +193,19 @@ final class LocalizationManager {
             .qualityHigh: "Alta (Lento)",
             .sortNewestFirst: "Más Reciente Primero",
             .sortOldestFirst: "Más Antiguo Primero",
-            .sortRecentlyAdded: "Agregados Recientemente"
+            .sortRecentlyAdded: "Agregados Recientemente",
+            .fileSizeLabel: "%@",
+            .spaceFreedFormat: "Libera %@",
+            .deleteCountWithSize: "Eliminar %d elementos (%@)",
+            .spaceSavedStat: "Espacio liberado: %@",
+            .burstLabel: "Ráfaga · %d",
+            .duplicateLabel: "%d duplicados",
+            .burstGrouping: "Agrupación de Ráfagas",
+            .filterPhotos: "Filtrar Fotos",
+            .filterByAlbum: "Álbumes",
+            .filterByTrip: "Viajes",
+            .allPhotos: "Todas las fotos (sin filtro)",
+            .tripFiltering: "Filtro de Viajes"
         ]
     }
 

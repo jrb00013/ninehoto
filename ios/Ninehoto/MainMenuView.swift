@@ -4,6 +4,8 @@ import UIKit
 
 struct MainMenuView: View {
     @ObservedObject var session: SwipeSessionViewModel
+    @State private var showFilterSheet = false
+    @Binding var currentFilter: SessionFilter
 
     var body: some View {
         ZStack {
@@ -56,11 +58,11 @@ struct MainMenuView: View {
                     }
 
                     Button {
-                        Task { await session.startSession() }
+                        Task { await session.startSession(filter: currentFilter) }
                     } label: {
                         HStack {
                             Image(systemName: "play.fill")
-                            Text("Start Cleaning")
+                            Text(currentFilter.isActive ? "Start (\(currentFilter.label))" : "Start Cleaning")
                         }
                         .font(.headline)
                         .frame(maxWidth: .infinity)
@@ -71,6 +73,20 @@ struct MainMenuView: View {
                     .controlSize(.large)
                     .padding(.horizontal, 48)
                     .disabled(!session.canStartSession)
+
+                    if FeatureFlags.shared.isTripFilteringEnabled {
+                        Button {
+                            showFilterSheet = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "line.3.horizontal.decrease.circle")
+                                Text(currentFilter.isActive ? "Filter: \(currentFilter.label)" : "Filter")
+                            }
+                            .font(.subheadline)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(.white.opacity(0.6))
+                    }
                 }
 
                 VStack(spacing: 4) {
@@ -87,6 +103,9 @@ struct MainMenuView: View {
                 Spacer()
                 Spacer()
             }
+        }
+        .sheet(isPresented: $showFilterSheet) {
+            FilterSelectionView(filter: $currentFilter)
         }
         .task {
             if session.authorizationState == .notDetermined {

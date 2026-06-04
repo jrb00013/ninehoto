@@ -24,6 +24,8 @@ namespace Ninehoto.Android.Utilities
         // Experimental Features
         public bool IsThumbnailPrefetchEnabled => GetBool("thumbnail_prefetch", true);
         public bool IsSmartSortEnabled => GetBool("smart_sort", false);
+        public bool IsBurstGroupingEnabled => GetBool("burst_grouping", true);
+        public bool IsStoragePreviewEnabled => GetBool("storage_preview", true);
         public bool IsBatchDeleteEnabled => GetBool("batch_delete", true);
         public bool IsSessionAnalyticsEnabled => GetBool("session_analytics", false);
 
@@ -31,6 +33,7 @@ namespace Ninehoto.Android.Utilities
         public bool IsDarkModeOnly => GetBool("dark_mode_only", true);
         public bool IsAnimatedTransitionsEnabled => GetBool("animated_transitions", true);
         public bool IsPullToRefreshEnabled => GetBool("pull_to_refresh", false);
+        public bool IsTripFilteringEnabled => GetBool("trip_filtering", true);
 
         // Debug Features
         public bool IsDebugLoggingEnabled => GetBool("debug_logging", false);
@@ -75,11 +78,13 @@ namespace Ninehoto.Android.Utilities
         FullscreenPreview,
         ThumbnailPrefetch,
         SmartSort,
+        BurstGrouping,
         BatchDelete,
         SessionAnalytics,
         DarkModeOnly,
         AnimatedTransitions,
         PullToRefresh,
+        TripFiltering,
         DebugLogging,
         PerformanceMetrics,
         MockData

@@ -7,6 +7,7 @@ struct SessionStatistics: Codable, Equatable {
     var sessionDate: Date
     var durationSeconds: TimeInterval
     var averageSwipesPerMinute: Double
+    var spaceSavedBytes: Int64
 
     static var empty: SessionStatistics {
         SessionStatistics(
@@ -15,7 +16,8 @@ struct SessionStatistics: Codable, Equatable {
             keepCount: 0,
             sessionDate: Date(),
             durationSeconds: 0,
-            averageSwipesPerMinute: 0
+            averageSwipesPerMinute: 0,
+            spaceSavedBytes: 0
         )
     }
 
@@ -81,6 +83,7 @@ final class StatisticsTracker {
         let totalDeletes = sessions.reduce(0) { $0 + $1.deleteCount }
         let totalKeeps = sessions.reduce(0) { $0 + $1.keepCount }
         let totalDuration = sessions.reduce(0) { $0 + $1.durationSeconds }
+        let totalSpace = sessions.reduce(0 as Int64) { $0 + $1.spaceSavedBytes }
 
         return SessionStatistics(
             swipeCount: totalSwipes,
@@ -88,7 +91,8 @@ final class StatisticsTracker {
             keepCount: totalKeeps,
             sessionDate: Date(),
             durationSeconds: totalDuration,
-            averageSwipesPerMinute: totalSwipes > 0 ? (totalSwipes / (totalDuration / 60)) : 0
+            averageSwipesPerMinute: totalSwipes > 0 ? (totalSwipes / (totalDuration / 60)) : 0,
+            spaceSavedBytes: totalSpace
         )
     }
 

@@ -110,6 +110,16 @@
           android:text="@string/start_cleaning"
           android:textSize="16sp" />
 
+      <Button
+          android:id="@+id/filter_button"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="8dp"
+          android:text="@string/filter_label"
+          android:textSize="14sp"
+          style="?android:attr/borderlessButtonStyle"
+          android:textColor="#AAFFFFFF" />
+
       <TextView
           android:id="@+id/cap_text"
           android:layout_width="match_parent"
@@ -182,6 +192,32 @@
                 android:textSize="12sp"
                 android:layout_marginStart="4dp" />
           </LinearLayout>
+
+          <TextView
+              android:id="@+id/file_size_text"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="bottom|start"
+              android:layout_margin="16dp"
+              android:paddingHorizontal="10dp"
+              android:paddingVertical="4dp"
+              android:textSize="12sp"
+              android:textColor="#EEFFFFFF"
+              android:background="@drawable/video_badge_bg"
+              android:visibility="gone" />
+
+          <TextView
+              android:id="@+id/group_badge_text"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="top|start"
+              android:layout_margin="12dp"
+              android:paddingHorizontal="10dp"
+              android:paddingVertical="4dp"
+              android:textSize="12sp"
+              android:textColor="#FFFFFFFF"
+              android:background="@drawable/video_badge_bg"
+              android:visibility="gone" />
         </FrameLayout>
       </androidx.cardview.widget.CardView>
     </FrameLayout>

@@ -13,6 +13,7 @@
   <!-- Swipe Screen -->
   <string name="done">Done</string>
   <string name="marked_delete">Marked to delete: %1$d</string>
+  <string name="marked_delete_with_size">Marked to delete: %1$d (%2$s)</string>
   <string name="remaining">Remaining: %1$d</string>
   <string name="undo_label">Undo</string>
   <string name="swipe_left_to_delete">Swipe left to delete</string>
@@ -28,6 +29,7 @@
   <string name="delete_confirm_title">Delete %1$d item(s)?</string>
   <string name="end_session_title">End session?</string>
   <string name="delete_confirm_message">This removes items from your library. Unreviewed items stay unchanged.</string>
+  <string name="delete_confirm_with_size">Delete %1$d items (%2$s) — this removes items from your library. Unreviewed items stay unchanged.</string>
   <string name="end_session_message">No items are marked for deletion. Unreviewed items stay unchanged.</string>
   <string name="delete_action">Delete %1$d item(s)</string>
   <string name="back_to_menu">Back to main menu</string>
@@ -41,6 +43,7 @@
   <!-- Results -->
   <string name="result_title">Result</string>
   <string name="deleted_count">Deleted %1$d item(s).</string>
+  <string name="deleted_with_size">Deleted %1$d item(s) (%2$s).</string>
   <string name="kept_count">Kept %1$d item(s).</string>
   <string name="delete_failed">Delete failed or was cancelled: %1$s</string>
   
@@ -76,6 +79,21 @@
   <string name="undo_button_accessibility">Undo last swipe</string>
   <string name="progress_accessibility">Progress: %1$d of %2$d</string>
   
+  <!-- Storage Preview -->
+  <string name="file_size_format">%1$s</string>
+  <string name="space_saved_stat">Space saved: %1$s</string>
+
+  <!-- Burst & Duplicate Grouping -->
+  <string name="burst_label">Burst · %1$d</string>
+  <string name="duplicate_label">%1$d duplicates</string>
+
+  <!-- Trip / Location Filtering -->
+  <string name="filter_label">Filter</string>
+  <string name="filter_all_photos">All photos (no filter)</string>
+  <string name="filter_by_bucket">Albums</string>
+  <string name="filter_by_trip">Trips</string>
+  <string name="filter_active_label">Filter: %1$s</string>
+
   <!-- Errors -->
   <string name="error_title">Error</string>
   <string name="no_photos_found">No photos or videos found</string>

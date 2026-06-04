@@ -11,6 +11,7 @@ namespace Ninehoto.Android.Models
         public DateTime SessionDate { get; set; }
         public double DurationSeconds { get; set; }
         public double AverageSwipesPerMinute { get; set; }
+        public long SpaceSavedBytes { get; set; }
 
         public static SessionStatistics Empty => new SessionStatistics
         {
@@ -19,7 +20,8 @@ namespace Ninehoto.Android.Models
             KeepCount = 0,
             SessionDate = DateTime.Now,
             DurationSeconds = 0,
-            AverageSwipesPerMinute = 0
+            AverageSwipesPerMinute = 0,
+            SpaceSavedBytes = 0
         };
 
         public double DeleteRate => SwipeCount > 0 ? (double)DeleteCount / SwipeCount * 100 : 0;
@@ -86,6 +88,7 @@ namespace Ninehoto.Android.Models
                 total.DeleteCount += session.DeleteCount;
                 total.KeepCount += session.KeepCount;
                 total.DurationSeconds += session.DurationSeconds;
+                total.SpaceSavedBytes += session.SpaceSavedBytes;
             }
 
             total.AverageSwipesPerMinute = total.DurationSeconds > 0 

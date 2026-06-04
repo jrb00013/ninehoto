@@ -27,16 +27,16 @@ struct SwipeDeckView: View {
 
             if session.isLoading {
                 loadingView
-            } else if let asset = session.currentAsset {
-                cardView(for: asset)
+            } else if let group = session.currentGroup {
+                cardView(for: group)
                     .scaleEffect(cardScale)
                     .opacity(cardOpacity)
                     .offset(dragOffset)
                     .rotationEffect(.degrees(Double(dragOffset.width / 20)))
-                    .gesture(dragGesture(for: asset))
+                    .gesture(dragGesture(for: group))
                     .overlay(badgeOverlay)
                     .onTapGesture {
-                        fullscreenAsset = asset
+                        fullscreenAsset = group.bestAsset
                         showFullscreen = true
                     }
                     .onChange(of: session.currentIndex) { _, _ in
@@ -81,11 +81,11 @@ struct SwipeDeckView: View {
                 session.cancelFinish()
             }
         } message: {
-            Text(
-                session.pendingDeleteCount > 0
-                    ? "This removes photos and videos from your library. Unreviewed items stay unchanged."
-                    : "No items are marked for deletion. Unreviewed items stay unchanged."
-            )
+            if session.pendingDeleteCount > 0 {
+                Text("Delete \(session.pendingDeleteCount) item(s) (\(session.formattedPendingSize)) — this removes photos and videos from your library. Unreviewed items stay unchanged.")
+            } else {
+                Text("No items are marked for deletion. Unreviewed items stay unchanged.")
+            }
         }
         .onAppear {
             feedbackGenerator.prepare()
@@ -119,11 +119,16 @@ struct SwipeDeckView: View {
     }
 
     @ViewBuilder
-    private func cardView(for asset: PHAsset) -> some View {
+    private func cardView(for group: AssetGroup) -> some View {
         GeometryReader { geo in
             ZStack {
                 Color(white: 0.08)
-                SwipeCardContent(asset: asset, containerSize: geo.size)
+                SwipeCardContent(
+                    asset: group.bestAsset,
+                    fileSize: session.fileSize(for: group.bestAsset),
+                    containerSize: geo.size,
+                    groupLabel: group.formattedLabel
+                )
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -133,7 +138,7 @@ struct SwipeDeckView: View {
         .padding(.vertical, 80)
     }
 
-    private func dragGesture(for asset: PHAsset) -> some Gesture {
+    private func dragGesture(for group: AssetGroup) -> some Gesture {
         DragGesture()
             .onChanged { value in
                 dragOffset = value.translation
@@ -233,6 +238,11 @@ struct SwipeDeckView: View {
                     Text("\(session.pendingDeleteCount)")
                         .font(.caption.bold())
                         .foregroundStyle(.red)
+                    if session.totalPendingSize > 0 {
+                        Text(session.formattedPendingSize)
+                            .font(.caption2.weight(.medium))
+                            .foregroundStyle(.orange)
+                    }
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
@@ -264,7 +274,9 @@ private enum SwipeDirection {
 
 private struct SwipeCardContent: View {
     let asset: PHAsset
+    let fileSize: Int64?
     let containerSize: CGSize
+    var groupLabel: String = ""
     @State private var image: UIImage?
     @State private var isLoading = true
 
@@ -288,22 +300,56 @@ private struct SwipeCardContent: View {
                 }
             }
 
-            if asset.mediaType == .video {
+            if !groupLabel.isEmpty {
                 VStack {
-                    Spacer()
-                    HStack(spacing: 6) {
-                        Image(systemName: "video.fill")
-                        Text(formatDuration(asset.duration))
+                    HStack {
+                        HStack(spacing: 4) {
+                            Image(systemName: "square.on.square")
+                                .font(.caption2)
+                            Text(groupLabel)
+                                .font(.caption.weight(.medium))
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(.ultraThinMaterial, in: Capsule())
+                        .padding(12)
+                        Spacer()
                     }
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(.black.opacity(0.6), in: Capsule())
-                    .padding(12)
+                    Spacer()
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+
+            VStack {
+                Spacer()
+                HStack(spacing: 8) {
+                    if let fileSize {
+                        HStack(spacing: 4) {
+                            Image(systemName: "doc.fill")
+                                .font(.caption2)
+                            Text(fileSize.formattedAsFileSize)
+                                .font(.caption.weight(.medium))
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(.ultraThinMaterial, in: Capsule())
+                    }
+
+                    if asset.mediaType == .video {
+                        HStack(spacing: 4) {
+                            Image(systemName: "video.fill")
+                            Text(formatDuration(asset.duration))
+                        }
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(.black.opacity(0.6), in: Capsule())
+                    }
+                }
+                .padding(12)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .task {

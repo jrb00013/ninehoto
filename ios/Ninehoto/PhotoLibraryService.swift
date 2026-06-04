@@ -41,6 +41,11 @@ actor PhotoLibraryService {
         return assets
     }
 
+    nonisolated func requestFileSize(for asset: PHAsset) -> Int64 {
+        let resources = PHAssetResource.assetResources(for: asset)
+        return resources.first?.fileSize ?? 0
+    }
+
     func loadImage(for asset: PHAsset, targetSize: CGSize) async -> UIImage? {
         await withCheckedContinuation { continuation in
             let opts = PHImageRequestOptions()

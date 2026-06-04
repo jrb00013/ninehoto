@@ -9,6 +9,7 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.AppCompat.App;
 using AndroidX.Core.Content;
+using Ninehoto.Android.Models;
 using AlertDialog = AndroidX.AppCompat.App.AlertDialog;
 using Uri = Android.Net.Uri;
 
@@ -26,10 +27,9 @@ public class MainActivity : AppCompatActivity
     private const float SwipeThresholdPx = 120f;
 
     private MediaRepository? _repo;
-    private readonly List<MediaItem> _queue = new();
-    private readonly HashSet<long> _pendingDeleteIds = new();
-    private readonly List<(int index, long id)> _undoStack = new();
-    private readonly List<long> _reversedStack = new();
+    private readonly List<AssetGroup> _groups = new();
+    private readonly HashSet<string> _pendingDeleteGroupIds = new();
+    private readonly List<(int index, string groupId)> _undoStack = new();
 
     private View? _menuScroll;
     private View? _sessionLayout;
@@ -43,18 +43,25 @@ public class MainActivity : AppCompatActivity
     private Button? _startButton;
     private Button? _undoButton;
     private Button? _doneButton;
+    private Button? _filterButton;
     private View? _videoIndicator;
     private TextView? _videoDurationText;
+    private TextView? _fileSizeText;
+    private TextView? _groupBadgeText;
     private ProgressBar? _deleteProgressBar;
 
     private int _index;
     private int _lastDeleteCount;
+    private long _pendingDeleteSize;
     private bool _permissionRequestedOnce;
     private float _cardScale = 1f;
     private ObjectAnimator? _scaleAnimator;
 
     private Vibrator? _vibrator;
     private readonly Android.Views.Animations.Animation? _cardEnterAnim;
+
+    private SessionFilter _currentFilter = new();
+    private List<Trip> _detectedTrips = new();
 
     protected override void OnCreate(Bundle? savedInstanceState)
     {
@@ -77,8 +84,11 @@ public class MainActivity : AppCompatActivity
         _startButton = FindViewById<Button>(Resource.Id.start_button);
         _undoButton = FindViewById<Button>(Resource.Id.undo_button);
         _doneButton = FindViewById<Button>(Resource.Id.done_button);
+        _filterButton = FindViewById<Button>(Resource.Id.filter_button);
         _videoIndicator = FindViewById(Resource.Id.video_indicator);
         _videoDurationText = FindViewById<TextView>(Resource.Id.video_duration);
+        _fileSizeText = FindViewById<TextView>(Resource.Id.file_size_text);
+        _groupBadgeText = FindViewById<TextView>(Resource.Id.group_badge_text);
         _deleteProgressBar = FindViewById<ProgressBar>(Resource.Id.delete_progress_bar);
 
         var cap = FindViewById<TextView>(Resource.Id.cap_text);
@@ -88,6 +98,15 @@ public class MainActivity : AppCompatActivity
         _doneButton!.Click += (_, _) => ShowFinishDialog();
         _undoButton!.Click += (_, _) => UndoLastSwipe();
         _undoButton!.Visibility = ViewStates.Gone;
+        if (_filterButton != null && FeatureFlags.Instance.IsTripFilteringEnabled)
+        {
+            _filterButton.Visibility = ViewStates.Visible;
+            _filterButton.Click += (_, _) => ShowFilterDialog();
+        }
+        else if (_filterButton != null)
+        {
+            _filterButton.Visibility = ViewStates.Gone;
+        }
 
         _cardImage!.SetOnTouchListener(new SwipeTouchListener(
             onSwipeLeft: HandleSwipeLeft,
@@ -99,6 +118,57 @@ public class MainActivity : AppCompatActivity
         ShowMenu();
     }
 
+    private void ShowFilterDialog()
+    {
+        var buckets = _repo?.GetBucketNames() ?? new List<string>();
+        var trips = TripDetector.DetectTrips(
+            _repo?.LoadRecentMedia().ToList() ?? new List<MediaItem>());
+
+        var items = new List<string> { GetString(Resource.String.filter_all_photos) };
+
+        if (trips.Count > 0)
+        {
+            items.Add($"--- {GetString(Resource.String.filter_by_trip)} ---");
+            items.AddRange(trips.Select(t => t.Name));
+        }
+
+        items.Add($"--- {GetString(Resource.String.filter_by_bucket)} ---");
+        items.AddRange(buckets);
+
+        var builder = new AlertDialog.Builder(this)!
+            .SetTitle(GetString(Resource.String.filter_label))!
+            .SetItems(items.ToArray(), (_, e) =>
+            {
+                int clicked = e.Which;
+                if (clicked == 0)
+                {
+                    _currentFilter = new SessionFilter();
+                }
+                else if (clicked <= trips.Count)
+                {
+                    _currentFilter = new SessionFilter { SelectedTrip = trips[clicked - 1] };
+                }
+                else
+                {
+                    int bucketIdx = clicked - trips.Count - 2;
+                    if (bucketIdx >= 0 && bucketIdx < buckets.Count)
+                        _currentFilter = new SessionFilter { BucketName = buckets[bucketIdx] };
+                }
+                UpdateFilterButtonText();
+            })!;
+        builder.Show();
+    }
+
+    private void UpdateFilterButtonText()
+    {
+        if (_filterButton != null)
+        {
+            _filterButton.Text = _currentFilter.IsActive
+                ? GetString(Resource.String.filter_active_label, _currentFilter.Label)
+                : GetString(Resource.String.filter_label);
+        }
+    }
+
     private void UpdatePermissionBanner()
     {
         if (_permissionText == null || _startButton == null)
@@ -107,6 +177,7 @@ public class MainActivity : AppCompatActivity
         }
 
         _startButton.Enabled = true;
+        UpdateFilterButtonText();
         if (HasMediaReadPermission())
         {
             _permissionText.Visibility = ViewStates.Gone;
@@ -174,17 +245,22 @@ public class MainActivity : AppCompatActivity
         _loadingBar!.Visibility = ViewStates.Visible;
         Task.Run(() =>
         {
-            var items = _repo!.LoadRecentMedia();
+            var items = _currentFilter.IsActive
+                ? ApplyFilter(_repo!.LoadRecentMedia())
+                : _repo!.LoadRecentMedia();
             RunOnUiThread(() =>
             {
                 _loadingBar.Visibility = ViewStates.Gone;
-                _queue.Clear();
-                _queue.AddRange(items);
-                _pendingDeleteIds.Clear();
+                var grouped = FeatureFlags.Instance.IsBurstGroupingEnabled
+                    ? _repo!.GroupAssets(items)
+                    : items.Select(i => new AssetGroup(new List<MediaItem> { i }, GroupType.Single)).ToList();
+                _groups.Clear();
+                _groups.AddRange(grouped);
+                _pendingDeleteGroupIds.Clear();
+                _pendingDeleteSize = 0;
                 _undoStack.Clear();
-                _reversedStack.Clear();
                 _index = 0;
-                if (_queue.Count == 0)
+                if (_groups.Count == 0)
                 {
                     Toast.MakeText(this, GetString(Resource.String.empty_gallery), ToastLength.Long)?.Show();
                     ShowMenu();
@@ -202,10 +278,10 @@ public class MainActivity : AppCompatActivity
     {
         _menuScroll!.Visibility = ViewStates.Visible;
         _sessionLayout!.Visibility = ViewStates.Gone;
-        _queue.Clear();
-        _pendingDeleteIds.Clear();
+        _groups.Clear();
+        _pendingDeleteGroupIds.Clear();
+        _pendingDeleteSize = 0;
         _undoStack.Clear();
-        _reversedStack.Clear();
         _index = 0;
         _repo?.ClearCache();
         UpdatePermissionBanner();
@@ -224,18 +300,18 @@ public class MainActivity : AppCompatActivity
         ResetCard();
         _cardImage!.ScaleX = 1f;
         _cardImage!.ScaleY = 1f;
-        if (_index >= _queue.Count)
+        if (_index >= _groups.Count)
         {
             ShowFinishDialog();
             return;
         }
 
-        var item = _queue[_index];
+        var group = _groups[_index];
+        var item = group.BestAsset;
         _loadingBar!.Visibility = ViewStates.Visible;
 
         if (item.IsVideo)
         {
-            long durationSec = (Java.Lang.JavaSystem.CurrentTimeMillis() / 1000) - item.DateAddedSec;
             long videoDurationMs = GetVideoDuration(item.ContentUri);
             string dur = FormatDuration(videoDurationMs / 1000);
             _videoDurationText!.Text = dur;
@@ -244,6 +320,26 @@ public class MainActivity : AppCompatActivity
         else
         {
             _videoIndicator!.Visibility = ViewStates.Gone;
+        }
+
+        if (item.FileSize > 0 && _fileSizeText != null)
+        {
+            _fileSizeText.Text = FormatFileSize(item.FileSize);
+            _fileSizeText.Visibility = ViewStates.Visible;
+        }
+        else if (_fileSizeText != null)
+        {
+            _fileSizeText.Visibility = ViewStates.Gone;
+        }
+
+        if (group.IsMultiple && _groupBadgeText != null)
+        {
+            _groupBadgeText.Text = group.FormattedLabel;
+            _groupBadgeText.Visibility = ViewStates.Visible;
+        }
+        else if (_groupBadgeText != null)
+        {
+            _groupBadgeText.Visibility = ViewStates.Gone;
         }
 
         Task.Run(() =>
@@ -287,12 +383,49 @@ public class MainActivity : AppCompatActivity
         return $"{m}:{s:D2}";
     }
 
+    private int PendingDeleteCount =>
+        _groups.Where(g => _pendingDeleteGroupIds.Contains(g.Id)).Sum(g => g.Count);
+
     private void UpdateHud()
     {
-        int remaining = Math.Max(0, _queue.Count - _index);
-        _markedText!.Text = GetString(Resource.String.marked_delete, _pendingDeleteIds.Count);
+        int remaining = Math.Max(0, _groups.Count - _index);
+        int markedCount = PendingDeleteCount;
+        if (_pendingDeleteSize > 0)
+        {
+            _markedText!.Text = GetString(Resource.String.marked_delete_with_size, markedCount, FormatFileSize(_pendingDeleteSize));
+        }
+        else
+        {
+            _markedText!.Text = GetString(Resource.String.marked_delete, markedCount);
+        }
         _remainingText!.Text = GetString(Resource.String.remaining, remaining);
         _undoButton!.Visibility = _undoStack.Count > 0 ? ViewStates.Visible : ViewStates.Gone;
+    }
+
+    private static string FormatFileSize(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
+        if (bytes < 1024L * 1024 * 1024) return $"{bytes / (1024.0 * 1024):F1} MB";
+        return $"{bytes / (1024.0 * 1024 * 1024):F1} GB";
+    }
+
+    private IReadOnlyList<MediaItem> ApplyFilter(IReadOnlyList<MediaItem> items)
+    {
+        if (_currentFilter.SelectedTrip != null)
+        {
+            var trip = _currentFilter.SelectedTrip;
+            long startSec = ((DateTimeOffset)trip.StartDate).ToUnixTimeSeconds();
+            long endSec = ((DateTimeOffset)trip.EndDate).ToUnixTimeSeconds();
+            return items.Where(i => i.DateAddedSec >= startSec && i.DateAddedSec <= endSec).ToList();
+        }
+
+        if (!string.IsNullOrEmpty(_currentFilter.BucketName))
+        {
+            return _repo?.LoadMediaFromBucket(_currentFilter.BucketName) ?? items;
+        }
+
+        return items;
     }
 
     private void HapticFeedback()
@@ -312,84 +445,62 @@ public class MainActivity : AppCompatActivity
 
     private void HandleSwipeLeft()
     {
-        if (_index >= _queue.Count)
-        {
-            return;
-        }
-
+        if (_index >= _groups.Count) return;
         HapticFeedback();
-        var item = _queue[_index];
-        if (!_pendingDeleteIds.Contains(item.Id))
+        var group = _groups[_index];
+        if (!_pendingDeleteGroupIds.Contains(group.Id))
         {
-            _pendingDeleteIds.Add(item.Id);
-            _undoStack.Add((_index, item.Id));
-            _reversedStack.Add(item.Id);
+            _pendingDeleteGroupIds.Add(group.Id);
+            _pendingDeleteSize += group.Assets.Sum(a => a.FileSize);
+            _undoStack.Add((_index, group.Id));
         }
         _index++;
         UpdateHud();
-        if (_index < _queue.Count)
-        {
-            BindCurrentCard();
-            PrefetchNext();
-        }
-        else
-        {
-            ShowFinishDialog();
-        }
+        if (_index < _groups.Count) { BindCurrentCard(); PrefetchNext(); }
+        else ShowFinishDialog();
     }
 
     private void HandleSwipeRight()
     {
-        if (_index >= _queue.Count)
-        {
-            return;
-        }
-
+        if (_index >= _groups.Count) return;
         HapticFeedback();
-        var item = _queue[_index];
-        if (_pendingDeleteIds.Contains(item.Id))
+        var group = _groups[_index];
+        if (_pendingDeleteGroupIds.Contains(group.Id))
         {
-            _pendingDeleteIds.Remove(item.Id);
-            _undoStack.Add((_index, item.Id));
-            _reversedStack.Add(item.Id);
+            _pendingDeleteGroupIds.Remove(group.Id);
+            _pendingDeleteSize -= group.Assets.Sum(a => a.FileSize);
+            _undoStack.Add((_index, group.Id));
         }
         _index++;
         UpdateHud();
-        if (_index < _queue.Count)
-        {
-            BindCurrentCard();
-            PrefetchNext();
-        }
-        else
-        {
-            ShowFinishDialog();
-        }
+        if (_index < _groups.Count) { BindCurrentCard(); PrefetchNext(); }
+        else ShowFinishDialog();
     }
 
     private void UndoLastSwipe()
     {
-        if (_undoStack.Count == 0)
-        {
-            return;
-        }
-
+        if (_undoStack.Count == 0) return;
         HapticFeedback();
         var last = _undoStack[^1];
         _undoStack.RemoveAt(_undoStack.Count - 1);
 
-        if (_index != last.index && last.index < _queue.Count)
+        var group = _groups.FirstOrDefault(g => g.Id == last.groupId);
+
+        if (_index != last.index && last.index < _groups.Count)
         {
             _index = last.index;
             BindCurrentCard();
         }
 
-        if (_pendingDeleteIds.Contains(last.id))
+        if (_pendingDeleteGroupIds.Contains(last.groupId))
         {
-            _pendingDeleteIds.Remove(last.id);
+            _pendingDeleteGroupIds.Remove(last.groupId);
+            if (group != null) _pendingDeleteSize -= group.Assets.Sum(a => a.FileSize);
         }
         else
         {
-            _pendingDeleteIds.Add(last.id);
+            _pendingDeleteGroupIds.Add(last.groupId);
+            if (group != null) _pendingDeleteSize += group.Assets.Sum(a => a.FileSize);
         }
 
         UpdateHud();
@@ -397,21 +508,26 @@ public class MainActivity : AppCompatActivity
 
     private void PrefetchNext()
     {
-        if (_repo == null || _queue.Count == 0)
+        if (_repo == null || _groups.Count == 0) return;
+        int end = Math.Min(_index + 5, _groups.Count);
+        var toPrefetch = new List<MediaItem>();
+        for (int i = _index; i < end; i++)
+            toPrefetch.AddRange(_groups[i].Assets);
+        Task.Run(() =>
         {
-            return;
-        }
-
-        Task.Run(() => _repo.PrefetchFrom(_index, _queue));
+            foreach (var item in toPrefetch)
+            {
+                if (_cache?.Get(item.Id) == null)
+                    _ = _cache?.Load(item.Id, item.ContentUri, 1080);
+            }
+        });
     }
+
+    private ThumbnailCache? _cache => ThumbnailCache.Instance(this);
 
     private void UpdateBadges(float dx)
     {
-        if (_deleteBadge == null || _keepBadge == null)
-        {
-            return;
-        }
-
+        if (_deleteBadge == null || _keepBadge == null) return;
         float progress = Math.Min(Math.Abs(dx) / SwipeThresholdPx, 1f);
         _deleteBadge.Visibility = dx < -40f ? ViewStates.Visible : ViewStates.Gone;
         _keepBadge.Visibility = dx > 40f ? ViewStates.Visible : ViewStates.Gone;
@@ -429,25 +545,18 @@ public class MainActivity : AppCompatActivity
 
     private void HideBadges()
     {
-        if (_deleteBadge != null)
-        {
-            _deleteBadge.Visibility = ViewStates.Gone;
-        }
-
-        if (_keepBadge != null)
-        {
-            _keepBadge.Visibility = ViewStates.Gone;
-        }
+        if (_deleteBadge != null) _deleteBadge.Visibility = ViewStates.Gone;
+        if (_keepBadge != null) _keepBadge.Visibility = ViewStates.Gone;
     }
 
     private void ShowFinishDialog()
     {
-        int pending = _pendingDeleteIds.Count;
+        int pending = PendingDeleteCount;
         string title = pending > 0
             ? GetString(Resource.String.delete_confirm_title, pending)
             : GetString(Resource.String.end_session_title);
         string message = pending > 0
-            ? GetString(Resource.String.delete_confirm_message)
+            ? GetString(Resource.String.delete_confirm_with_size, pending, FormatFileSize(_pendingDeleteSize))
             : GetString(Resource.String.end_session_message);
 
         var builder = new AlertDialog.Builder(this)!
@@ -465,9 +574,9 @@ public class MainActivity : AppCompatActivity
 
         builder.SetNegativeButton(GetString(Resource.String.cancel), (_, _) =>
         {
-            if (_index >= _queue.Count && _queue.Count > 0)
+            if (_index >= _groups.Count && _groups.Count > 0)
             {
-                _index = _queue.Count - 1;
+                _index = _groups.Count - 1;
                 BindCurrentCard();
             }
         })!.Show();
@@ -475,14 +584,14 @@ public class MainActivity : AppCompatActivity
 
     private void ApplyDeletes()
     {
-        var toDelete = _queue.Where(x => _pendingDeleteIds.Contains(x.Id)).ToList();
-        if (toDelete.Count == 0)
-        {
-            ShowMenu();
-            return;
-        }
+        var toDelete = _groups
+            .Where(g => _pendingDeleteGroupIds.Contains(g.Id))
+            .SelectMany(g => g.Assets)
+            .ToList();
+        if (toDelete.Count == 0) { ShowMenu(); return; }
 
         _lastDeleteCount = toDelete.Count;
+        _pendingDeleteSize = toDelete.Sum(x => x.FileSize);
         _sessionLayout!.Visibility = ViewStates.Gone;
         _deleteProgressBar!.Visibility = ViewStates.Visible;
 
@@ -511,19 +620,14 @@ public class MainActivity : AppCompatActivity
                 try
                 {
                     int rows = ContentResolver!.Delete(item.ContentUri, null, null);
-                    if (rows > 0)
-                    {
-                        deleted++;
-                    }
+                    if (rows > 0) deleted++;
                 }
-                catch
-                {
-                }
+                catch { }
             }
 
             new AlertDialog.Builder(this)!
                 .SetTitle(Resource.String.result_title)!
-                .SetMessage(GetString(Resource.String.deleted_count, deleted))!
+                .SetMessage(GetString(Resource.String.deleted_with_size, deleted, FormatFileSize(_pendingDeleteSize)))!
                 .SetPositiveButton(Android.Resource.String.Ok, (_, _) => ShowMenu())!
                 .Show();
         }
@@ -532,13 +636,10 @@ public class MainActivity : AppCompatActivity
     protected override void OnActivityResult(int requestCode, Result resultCode, Intent? data)
     {
         base.OnActivityResult(requestCode, resultCode, data);
-        if (requestCode != DeleteRequestCode)
-        {
-            return;
-        }
+        if (requestCode != DeleteRequestCode) return;
 
         string msg = resultCode == Result.Ok
-            ? GetString(Resource.String.deleted_count, _lastDeleteCount)
+            ? GetString(Resource.String.deleted_with_size, _lastDeleteCount, FormatFileSize(_pendingDeleteSize))
             : GetString(Resource.String.delete_failed, "cancelled");
 
         new AlertDialog.Builder(this)!
@@ -566,10 +667,7 @@ public class MainActivity : AppCompatActivity
 
         public bool OnTouch(View? v, MotionEvent? e)
         {
-            if (v == null || e == null)
-            {
-                return false;
-            }
+            if (v == null || e == null) return false;
 
             switch (e.ActionMasked)
             {
@@ -584,20 +682,9 @@ public class MainActivity : AppCompatActivity
                 case MotionEventActions.Up:
                 case MotionEventActions.Cancel:
                     float total = e.RawX - _downX;
-                    if (total < -SwipeThresholdPx)
-                    {
-                        _onSwipeLeft();
-                    }
-                    else if (total > SwipeThresholdPx)
-                    {
-                        _onSwipeRight();
-                    }
-                    else
-                    {
-                        v.Animate()?.TranslationX(0)?.SetDuration(150)?.Start();
-                        _onCancelDrag();
-                    }
-
+                    if (total < -SwipeThresholdPx) _onSwipeLeft();
+                    else if (total > SwipeThresholdPx) _onSwipeRight();
+                    else { v.Animate()?.TranslationX(0)?.SetDuration(150)?.Start(); _onCancelDrag(); }
                     return true;
                 default:
                     return false;

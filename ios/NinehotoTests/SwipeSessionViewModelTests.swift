@@ -17,7 +17,7 @@ final class SwipeSessionViewModelTests: XCTestCase {
     func testInitialState() async throws {
         await MainActor.run {
             XCTAssertEqual(viewModel.phase, .mainMenu)
-            XCTAssertEqual(viewModel.assets.count, 0)
+            XCTAssertEqual(viewModel.groups.count, 0)
             XCTAssertEqual(viewModel.currentIndex, 0)
             XCTAssertEqual(viewModel.pendingDeleteCount, 0)
             XCTAssertEqual(viewModel.remainingCount, 0)
@@ -31,10 +31,10 @@ final class SwipeSessionViewModelTests: XCTestCase {
         }
     }
 
-    func testRemainingCountWithNoAssets() async throws {
+    func testRemainingCountWithNoGroups() async throws {
         await MainActor.run {
             XCTAssertEqual(viewModel.remainingCount, 0)
-            XCTAssertEqual(viewModel.currentAsset, nil)
+            XCTAssertEqual(viewModel.currentGroup, nil)
         }
     }
 
@@ -102,12 +102,12 @@ final class SwipeSessionViewModelTests: XCTestCase {
     func testResetToMainMenuClearsState() async throws {
         await MainActor.run {
             viewModel.phase = .swiping
-            viewModel.assets = []
+            viewModel.groups = []
             viewModel.currentIndex = 99
-            viewModel.pendingDeletionIds = ["fake-id"]
+            viewModel.pendingDeletionGroupIds = ["fake-id"]
             viewModel.resetToMainMenu()
             XCTAssertEqual(viewModel.phase, .mainMenu)
-            XCTAssertEqual(viewModel.assets.count, 0)
+            XCTAssertEqual(viewModel.groups.count, 0)
             XCTAssertEqual(viewModel.currentIndex, 0)
             XCTAssertEqual(viewModel.pendingDeleteCount, 0)
         }
