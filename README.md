@@ -2,7 +2,7 @@
 
 > Swipe left to lose it, right to keep it. Nothing is deleted until you confirm.
 
-[![CI](https://github.com/ninehoto/ninehoto/actions/workflows/ci.yml/badge.svg)](https://github.com/ninehoto/ninehoto/actions/workflows/ci.yml)
+[![CI](https://github.com/jrb00013/ninehoto/actions/workflows/ci.yml/badge.svg)](https://github.com/jrb00013/ninehoto/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform: iOS](https://img.shields.io/badge/Platform-iOS-000000?style=flat&logo=apple)](https://developer.apple.com)
 [![Platform: Android](https://img.shields.io/badge/Platform-Android-3DDC84?style=flat&logo=android)](https://developer.android.com)
@@ -22,42 +22,19 @@ A dual-platform photo and video cleanup app for iOS and Android. Browse your mos
 - **Dark mode** — fully dark UI throughout
 - **iOS fullscreen preview** — tap any card to view fullscreen
 - **Delete progress indicator** — visual feedback during deletion
+- **Storage preview** — see how much space your pending deletions will free
+- **Burst / duplicate grouping** — review near-identical shots together
+- **Trip / location filtering** — clean up one trip or place at a time
+- **Statistics & settings** — session stats, preferences, and an About screen
 
 ## Architecture
 
-```
-ninehoto/
-├── android/              # Android app (Xamarin/C#)
-│   └── Ninehoto.Android/
-│       ├── MainActivity.cs
-│       ├── MediaRepository.cs
-│       ├── MediaItem.cs
-│       ├── ThumbnailCache.cs
-│       └── Resources/
-├── ios/                  # iOS app (SwiftUI)
-│   ├── Ninehoto/
-│   │   ├── NinehotoApp.swift
-│   │   ├── RootView.swift
-│   │   ├── MainMenuView.swift
-│   │   ├── SwipeDeckView.swift
-│   │   ├── SwipeSessionViewModel.swift
-│   │   ├── PhotoLibraryService.swift
-│   │   ├── ThumbnailCache.swift
-│   │   └── FullscreenMediaView.swift
-│   ├── NinehotoTests/    # iOS unit tests (XCTest)
-│   └── Ninehoto.xcodeproj/
-├── .github/
-│   ├── workflows/        # GitHub Actions CI
-│   ├── ISSUE_TEMPLATE/   # Bug report & feature request
-│   └── PULL_REQUEST_TEMPLATE.md
-├── Makefile              # Build orchestration
-├── setup.sh             # Environment setup script
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── CODE_OF_CONDUCT.md
-├── SECURITY.md
-└── LICENSE
-```
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full layout. In short:
+
+- `ios/` — SwiftUI app (`Ninehoto/`), XCTest suite (`NinehotoTests/`), XcodeGen `project.yml`
+- `android/` — Xamarin/C# app (`Ninehoto.Android/`) and xUnit tests (`Ninehoto.Android.Tests/`)
+- `scripts/` — emulator/simulator, build, and test helpers
+- `.github/workflows/` — CI and code-quality checks
 
 ## Getting Started
 
@@ -72,7 +49,7 @@ ninehoto/
 
 ```bash
 # Clone the repo
-git clone https://github.com/ninehoto/ninehoto.git
+git clone https://github.com/jrb00013/ninehoto.git
 cd ninehoto
 
 # Run the setup script (checks all dependencies)

@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Storage space preview, burst/duplicate grouping, and trip/location filtering (iOS and Android)
+- `docs/ARCHITECTURE.md`
+
+### Fixed
+
+- iOS: removed duplicate `FullscreenMediaView` declaration (redeclaration build error); swipe deck now uses `Views/Components/FullscreenMediaView`
+- README: corrected repository URLs and stale file layout
+
 ## [1.0.0] — 2024-05-09
 
 ### Added
