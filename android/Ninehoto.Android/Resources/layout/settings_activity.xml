@@ -27,7 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Preferences"
-                android:textAppearance="?textAppearanceTitleSmall"
+                android:textAppearance="?android:textAppearanceSmall"
                 android:textColor="?colorPrimary"
                 android:layout_marginBottom="8dp" />
 
@@ -42,7 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Thumbnail Quality"
-                android:textAppearance="?textAppearanceBodyMedium"
+                android:textAppearance="?android:textAppearanceMedium"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp" />
 
@@ -76,7 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sort Order"
-                android:textAppearance="?textAppearanceBodyMedium"
+                android:textAppearance="?android:textAppearanceMedium"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp" />
 
@@ -111,7 +111,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Data"
-                android:textAppearance="?textAppearanceTitleSmall"
+                android:textAppearance="?android:textAppearanceSmall"
                 android:textColor="?colorPrimary"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="8dp" />
@@ -121,7 +121,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Reset Statistics"
-                style="@style/Widget.Material3.Button.OutlinedButton"
+                style="@style/Widget.AppCompat.Button.Borderless"
                 android:textColor="@color/error_color" />
 
             <Button
@@ -129,7 +129,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Clear Cache"
-                style="@style/Widget.Material3.Button.OutlinedButton"
+                style="@style/Widget.AppCompat.Button.Borderless"
                 android:textColor="@color/error_color"
                 android:layout_marginTop="8dp" />
 
@@ -138,7 +138,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="About"
-                android:textAppearance="?textAppearanceTitleSmall"
+                android:textAppearance="?android:textAppearanceSmall"
                 android:textColor="?colorPrimary"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="8dp" />
@@ -167,7 +167,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Debug"
-                android:textAppearance="?textAppearanceTitleSmall"
+                android:textAppearance="?android:textAppearanceSmall"
                 android:textColor="?colorPrimary"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="8dp" />
