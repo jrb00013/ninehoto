@@ -5,7 +5,7 @@ using Android.Content;
 using Android.OS;
 using Android.Runtime;
 
-namespace Ninehoto.Android.Utilities
+namespace Ninehoto.Droid.Utilities
 {
     public class SystemMonitor
     {

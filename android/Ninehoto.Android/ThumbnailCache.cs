@@ -11,7 +11,7 @@ public sealed class ThumbnailCache(Context context) : Java.Lang.Object
     public static ThumbnailCache Instance(Context context) => _instance ??= new ThumbnailCache(context);
 
     private readonly ContentResolver _resolver = context.ContentResolver!;
-    private readonly LruCache<long, Bitmap> _cache = new(Math.Min(50, (int)(Runtime.GetRuntime().MaxMemory() / 1024 / 16)));
+    private readonly LruCache<long, Bitmap> _cache = new(Math.Min(50, (int)(Java.Lang.Runtime.GetRuntime()!.MaxMemory() / 1024 / 16)));
 
     public Bitmap? Get(long mediaId) => _cache.Get(mediaId);
 
@@ -35,7 +35,7 @@ public sealed class ThumbnailCache(Context context) : Java.Lang.Object
             Bitmap? bmp;
             if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
             {
-                bmp = _resolver.LoadThumbnail(contentUri, new Size(targetPx, targetPx), null);
+                bmp = _resolver.LoadThumbnail(contentUri, new Android.Util.Size(targetPx, targetPx), null);
             }
             else
             {

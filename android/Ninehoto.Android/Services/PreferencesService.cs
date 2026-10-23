@@ -1,8 +1,8 @@
 using System;
 using Android.Content;
-using Ninehoto.Android.Interfaces;
+using Ninehoto.Droid.Interfaces;
 
-namespace Ninehoto.Android.Services
+namespace Ninehoto.Droid.Services
 {
     public class PreferencesService : IPreferencesService
     {

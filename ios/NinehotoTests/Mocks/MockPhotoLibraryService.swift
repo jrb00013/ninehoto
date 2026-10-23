@@ -13,7 +13,7 @@ final class MockPhotoLibraryService: PhotoLibraryServiceProtocol {
     var deleteCallCount = 0
     var lastDeletedAssets: [PHAsset]?
 
-    var currentAuthorizationStatus: PHAuthorizationStatus {
+    func currentAuthorizationStatus() -> PHAuthorizationStatus {
         mockAuthorizationStatus
     }
 
@@ -37,7 +37,7 @@ final class MockPhotoLibraryService: PhotoLibraryServiceProtocol {
         }
     }
 
-    func fetchThumbnail(for asset: PHAsset, targetSize: CGSize) async -> UIImage? {
+    func loadImage(for asset: PHAsset, targetSize: CGSize) async -> UIImage? {
         return UIImage()
     }
 
@@ -57,7 +57,7 @@ final class MockThumbnailCache: ThumbnailCacheProtocol {
     var prefetchCallCount = 0
     var clearCallCount = 0
 
-    func prefetch(_ assets: [PHAsset], service: PhotoLibraryServiceProtocol) async {
+    func prefetch(_ assets: [PHAsset], service: PhotoLibraryService) async {
         prefetchCallCount += 1
     }
 

@@ -122,6 +122,28 @@ struct AnalyticsEvent: Codable, Identifiable {
         self.properties = properties
         self.timestamp = Date()
     }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, name, properties, timestamp
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(UUID.self, forKey: .id)
+        name = try c.decode(String.self, forKey: .name)
+        timestamp = try c.decode(Date.self, forKey: .timestamp)
+        let data = try c.decode(Data.self, forKey: .properties)
+        properties = (try? JSONSerialization.jsonObject(with: data) as? [String: Any]) ?? [:]
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(id, forKey: .id)
+        try c.encode(name, forKey: .name)
+        try c.encode(timestamp, forKey: .timestamp)
+        let valid = JSONSerialization.isValidJSONObject(properties) ? properties : [:]
+        try c.encode(try JSONSerialization.data(withJSONObject: valid), forKey: .properties)
+    }
 }
 
 extension AnalyticsEvent {

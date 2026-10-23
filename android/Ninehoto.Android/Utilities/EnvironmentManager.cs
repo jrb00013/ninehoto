@@ -1,6 +1,6 @@
 using System;
 
-namespace Ninehoto.Android.Utilities
+namespace Ninehoto.Droid.Utilities
 {
     public enum Environment
     {

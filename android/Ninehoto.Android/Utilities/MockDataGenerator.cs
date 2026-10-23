@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Ninehoto.Android.Models;
+using Ninehoto.Droid.Models;
 
-namespace Ninehoto.Android.Utilities
+namespace Ninehoto.Droid.Utilities
 {
     public class MockDataGenerator
     {

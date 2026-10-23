@@ -127,7 +127,7 @@ final class ImageProcessor {
         return ImageMetadata(
             width: cgImage.width,
             height: cgImage.height,
-            colorSpace: cgImage.colorSpace?.model.rawValue ?? "unknown",
+            colorSpace: (cgImage.colorSpace?.name as String?) ?? "unknown",
             bitsPerComponent: cgImage.bitsPerComponent,
             hasAlpha: cgImage.alphaInfo != .none
         )

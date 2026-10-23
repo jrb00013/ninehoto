@@ -145,8 +145,3 @@ final class SystemMonitor {
     }
 }
 
-extension ProcessInfo {
-    var isLowPowerModeEnabled: Bool {
-        processInfo.isLowPowerModeEnabled
-    }
-}

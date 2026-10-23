@@ -58,7 +58,8 @@ final class MockDataGenerator {
                 keepCount: keepCount,
                 sessionDate: Date().addingTimeInterval(-Double(i) * 86400 * 7),
                 durationSeconds: duration,
-                averageSwipesPerMinute: swipeCount / (duration / 60)
+                averageSwipesPerMinute: Double(swipeCount) / (duration / 60),
+                spaceSavedBytes: 0
             )
             sessions.append(session)
         }

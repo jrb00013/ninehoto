@@ -6,9 +6,9 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 using AndroidX.AppCompat.App;
-using Ninehoto.Android.Models;
+using Ninehoto.Droid.Models;
 
-namespace Ninehoto.Android
+namespace Ninehoto.Droid
 {
     [Activity(Label = "Statistics")]
     public class StatisticsActivity : AppCompatActivity
@@ -62,7 +62,7 @@ namespace Ninehoto.Android
             _deletedText.Text = totalStats.DeleteCount.ToString();
             _keptText.Text = totalStats.KeepCount.ToString();
             _deleteRateText.Text = $"{totalStats.DeleteRate:F1}%";
-            _avgSwipesText.Text = $"{totalStats.AverageSwipesPerMinutes:F1}/min";
+            _avgSwipesText.Text = $"{totalStats.AverageSwipesPerMinute:F1}/min";
             _totalTimeText.Text = totalStats.FormattedDuration;
 
             var sessions = _tracker.GetAllSessions();
@@ -76,9 +76,9 @@ namespace Ninehoto.Android
                 var emptyText = new TextView(this)
                 {
                     Text = "No sessions yet",
-                    TextAlignment = TextAlignment.Center,
-                    SetTextColor(Android.Graphics.Color.Gray)
+                    TextAlignment = TextAlignment.Center
                 };
+                emptyText.SetTextColor(Android.Graphics.Color.Gray);
                 _sessionsContainer.AddView(emptyText);
                 return;
             }

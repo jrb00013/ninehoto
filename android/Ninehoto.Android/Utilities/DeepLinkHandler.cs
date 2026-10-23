@@ -1,7 +1,7 @@
 using System;
 using Android.Content;
 
-namespace Ninehoto.Android.Utilities
+namespace Ninehoto.Droid.Utilities
 {
     public enum DeepLink
     {

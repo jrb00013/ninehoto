@@ -1,5 +1,15 @@
 import Foundation
 
+enum AppErrorType: String {
+    case photoLibraryAccessDenied
+    case photoLibraryAccessRestricted
+    case noPhotosFound
+    case thumbnailLoadFailed
+    case deletionFailed
+    case sessionExpired
+    case unknown
+}
+
 enum AppError: Error, LocalizedError, Equatable {
     case photoLibraryAccessDenied
     case photoLibraryAccessRestricted
@@ -28,6 +38,18 @@ enum AppError: Error, LocalizedError, Equatable {
         }
     }
 
+    var errorType: AppErrorType {
+        switch self {
+        case .photoLibraryAccessDenied: return .photoLibraryAccessDenied
+        case .photoLibraryAccessRestricted: return .photoLibraryAccessRestricted
+        case .noPhotosFound: return .noPhotosFound
+        case .thumbnailLoadFailed: return .thumbnailLoadFailed
+        case .deletionFailed: return .deletionFailed
+        case .sessionExpired: return .sessionExpired
+        case .unknown: return .unknown
+        }
+    }
+
     var isRecoverable: Bool {
         switch self {
         case .photoLibraryAccessDenied, .photoLibraryAccessRestricted:
@@ -42,6 +64,24 @@ enum AppError: Error, LocalizedError, Equatable {
             return true
         case .unknown:
             return true
+        }
+    }
+
+    static func == (lhs: AppError, rhs: AppError) -> Bool {
+        switch (lhs, rhs) {
+        case (.photoLibraryAccessDenied, .photoLibraryAccessDenied),
+             (.photoLibraryAccessRestricted, .photoLibraryAccessRestricted),
+             (.noPhotosFound, .noPhotosFound),
+             (.sessionExpired, .sessionExpired):
+            return true
+        case let (.thumbnailLoadFailed(a), .thumbnailLoadFailed(b)):
+            return a == b
+        case let (.deletionFailed(c1, r1), .deletionFailed(c2, r2)):
+            return c1 == c2 && r1 == r2
+        case let (.unknown(a), .unknown(b)):
+            return a.localizedDescription == b.localizedDescription
+        default:
+            return false
         }
     }
 }

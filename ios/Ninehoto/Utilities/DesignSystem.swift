@@ -72,16 +72,9 @@ extension View {
         modifier(AppShadow(radius: radius, x: x, y: y, opacity: opacity))
     }
     
-    func cardStyle() -> some View {
-        self
-            .background(Color.secondarySystemBackground)
-            .cornerRadius(AppCornerRadius.large)
-            .appShadow()
-    }
-    
     func elevatedCard() -> some View {
         self
-            .background(Color.secondarySystemBackground)
+            .background(Color(UIColor.secondarySystemBackground))
             .cornerRadius(AppCornerRadius.large)
             .appShadow(radius: 12, opacity: 0.15)
     }

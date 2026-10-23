@@ -1,3 +1,4 @@
+using Android.Animation;
 using Android;
 using Android.App;
 using Android.Content;
@@ -9,9 +10,9 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.AppCompat.App;
 using AndroidX.Core.Content;
-using Ninehoto.Android.Models;
+using Ninehoto.Droid.Models;
+using FeatureFlags = Ninehoto.Droid.Utilities.FeatureFlags;
 using AlertDialog = AndroidX.AppCompat.App.AlertDialog;
-using Uri = Android.Net.Uri;
 
 namespace Ninehoto;
 

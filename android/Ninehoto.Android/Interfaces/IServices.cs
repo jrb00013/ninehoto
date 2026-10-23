@@ -1,6 +1,6 @@
 using System;
 
-namespace Ninehoto.Android.Interfaces
+namespace Ninehoto.Droid.Interfaces
 {
     public interface IAnalyticsService
     {
