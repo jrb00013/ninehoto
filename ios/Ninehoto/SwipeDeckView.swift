@@ -58,7 +58,7 @@ struct SwipeDeckView: View {
         }
         .fullScreenCover(isPresented: $showFullscreen) {
             if let asset = fullscreenAsset {
-                FullscreenMediaView(asset: asset, isPresented: $showFullscreen)
+                FullscreenMediaView(asset: asset, onDismiss: { showFullscreen = false })
             }
         }
         .confirmationDialog(
@@ -369,67 +369,6 @@ private struct SwipeCardContent: View {
                 }
                 isLoading = false
             }
-        }
-    }
-
-    private func formatDuration(_ seconds: TimeInterval) -> String {
-        let mins = Int(seconds) / 60
-        let secs = Int(seconds) % 60
-        return String(format: "%d:%02d", mins, secs)
-    }
-}
-
-struct FullscreenMediaView: View {
-    let asset: PHAsset
-    @Binding var isPresented: Bool
-    @State private var image: UIImage?
-    @State private var isLoading = true
-
-    var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-
-            if isLoading {
-                ProgressView()
-                    .tint(.white)
-            } else if let image {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFit()
-            }
-
-            VStack {
-                HStack {
-                    Button {
-                        isPresented = false
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.title)
-                            .foregroundStyle(.white.opacity(0.8))
-                    }
-                    Spacer()
-                }
-                .padding()
-
-                Spacer()
-
-                if asset.mediaType == .video {
-                    HStack(spacing: 6) {
-                        Image(systemName: "video.fill")
-                        Text(formatDuration(asset.duration))
-                    }
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(.white)
-                }
-            }
-        }
-        .task {
-            let targetSize = CGSize(
-                width: UIScreen.main.bounds.width * UIScreen.main.scale,
-                height: UIScreen.main.bounds.height * UIScreen.main.scale
-            )
-            image = await PhotoLibraryService().loadImage(for: asset, targetSize: targetSize)
-            isLoading = false
         }
     }
 
