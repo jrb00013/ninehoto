@@ -125,13 +125,13 @@ public sealed class MediaRepository(Context context)
     public List<string> GetBucketNames()
     {
         var names = new List<string>();
-        var projection = new[] { MediaStore.Images.Media.BucketDisplayName };
+        var projection = new string[] { "bucket_display_name" };
         using ICursor? cursor = _resolver.Query(
             MediaStore.Images.Media.ExternalContentUri!,
             projection, null, null, null);
         if (cursor == null) return names;
 
-        int col = cursor.GetColumnIndexOrThrow(MediaStore.Images.Media.BucketDisplayName);
+        int col = cursor.GetColumnIndexOrThrow("bucket_display_name");
         while (cursor.MoveToNext())
         {
             var name = cursor.GetString(col);
@@ -144,10 +144,10 @@ public sealed class MediaRepository(Context context)
     public IReadOnlyList<MediaItem> LoadMediaFromBucket(string bucketName)
     {
         var images = QueryCollection(MediaStore.Images.Media.ExternalContentUri!, isVideo: false,
-            selection: $"{MediaStore.Images.Media.BucketDisplayName} = ?",
+            selection: $"{"bucket_display_name"} = ?",
             selectionArgs: new[] { bucketName });
         var videos = QueryCollection(MediaStore.Video.Media.ExternalContentUri!, isVideo: true,
-            selection: $"{MediaStore.Video.Media.BucketDisplayName} = ?",
+            selection: $"{"bucket_display_name"} = ?",
             selectionArgs: new[] { bucketName });
 
         var combined = new List<MediaItem>(images.Count + videos.Count);

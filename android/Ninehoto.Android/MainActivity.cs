@@ -11,6 +11,7 @@ using Android.Widget;
 using AndroidX.AppCompat.App;
 using AndroidX.Core.Content;
 using Ninehoto.Droid.Models;
+using FeatureFlags = Ninehoto.Droid.Utilities.FeatureFlags;
 using AlertDialog = AndroidX.AppCompat.App.AlertDialog;
 using Uri = Android.Net.Uri;
 
