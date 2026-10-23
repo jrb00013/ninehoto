@@ -22,7 +22,7 @@ final class AccessibilityManager {
     }
 
     var preferredContentSizeCategory: UIContentSizeCategory {
-        UIAccessibility.preferredContentSizeCategory
+        UIApplication.shared.preferredContentSizeCategory
     }
 
     func announce(_ message: String) {

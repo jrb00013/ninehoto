@@ -1,5 +1,15 @@
 import Foundation
 
+enum AppErrorType: String {
+    case photoLibraryAccessDenied
+    case photoLibraryAccessRestricted
+    case noPhotosFound
+    case thumbnailLoadFailed
+    case deletionFailed
+    case sessionExpired
+    case unknown
+}
+
 enum AppError: Error, LocalizedError, Equatable {
     case photoLibraryAccessDenied
     case photoLibraryAccessRestricted
@@ -25,6 +35,18 @@ enum AppError: Error, LocalizedError, Equatable {
             return "Your session has expired. Please start again."
         case .unknown(let underlying):
             return "An unexpected error occurred: \(underlying.localizedDescription)"
+        }
+    }
+
+    var errorType: AppErrorType {
+        switch self {
+        case .photoLibraryAccessDenied: return .photoLibraryAccessDenied
+        case .photoLibraryAccessRestricted: return .photoLibraryAccessRestricted
+        case .noPhotosFound: return .noPhotosFound
+        case .thumbnailLoadFailed: return .thumbnailLoadFailed
+        case .deletionFailed: return .deletionFailed
+        case .sessionExpired: return .sessionExpired
+        case .unknown: return .unknown
         }
     }
 
