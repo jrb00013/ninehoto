@@ -16,7 +16,9 @@
   <ItemGroup>
     <AndroidLibrary Remove="gradle/**" />
     <None Remove="gradle/**" />
-    <Compile Remove="obj/**;bin/**" />
+    <!-- Unfinished scaffolding (no implementations behind these interfaces); not part of the app yet. -->
+    <Compile Remove="Interfaces/**;Services/**;ViewModels/**;Models/MediaItem.cs;Models/AppError.cs" />
+    <Compile Remove="Utilities/CacheManager.cs;Utilities/DateFormatters.cs;Utilities/DeepLinkHandler.cs;Utilities/EnvironmentManager.cs;Utilities/Extensions.cs;Utilities/MockDataGenerator.cs;Utilities/NetworkMonitor.cs;Utilities/PerformanceMonitor.cs;Utilities/SystemMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.7.0.5" />

@@ -3,8 +3,6 @@ using Android.App;
 using Android.OS;
 using Android.Widget;
 using AndroidX.AppCompat.App;
-using Ninehoto.Droid.Interfaces;
-using Ninehoto.Droid.Services;
 using Ninehoto.Droid.Utilities;
 
 namespace Ninehoto.Droid
@@ -12,8 +10,13 @@ namespace Ninehoto.Droid
     [Activity(Label = "Settings")]
     public class SettingsActivity : AppCompatActivity
     {
-        private IPreferencesService _prefs;
-        private ILoggingService _logger;
+        private enum ThumbnailQuality { Low, Medium, High }
+
+        private const string KeyHaptic = "haptic_feedback";
+        private const string KeyQuality = "thumbnail_quality";
+        private const string Tag = "ninehoto";
+
+        private Android.Content.ISharedPreferences _prefs;
 
         private Switch _hapticSwitch;
         private RadioGroup _qualityGroup;
@@ -29,9 +32,7 @@ namespace Ninehoto.Droid
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.settings_activity);
 
-            var prefs = Application.Context.GetSharedPreferences("ninehoto_prefs", Android.Content.FileCreationMode.Private);
-            _prefs = new PreferencesService(prefs);
-            _logger = new LoggingService();
+            _prefs = Application.Context.GetSharedPreferences("ninehoto_prefs", Android.Content.FileCreationMode.Private);
 
             InitializeViews();
             LoadSettings();
@@ -60,9 +61,9 @@ namespace Ninehoto.Droid
 
         private void LoadSettings()
         {
-            _hapticSwitch.Checked = _prefs.HapticFeedbackEnabled;
+            _hapticSwitch.Checked = _prefs.GetBoolean(KeyHaptic, true);
 
-            switch (_prefs.GetType().GetProperty("ThumbnailQuality")?.GetValue(_prefs))
+            switch ((ThumbnailQuality)_prefs.GetInt(KeyQuality, (int)ThumbnailQuality.Medium))
             {
                 case ThumbnailQuality.Low:
                     _qualityGroup.Check(Resource.Id.radio_quality_low);
@@ -93,8 +94,8 @@ namespace Ninehoto.Droid
         {
             _hapticSwitch.CheckedChange += (s, e) =>
             {
-                _prefs.HapticFeedbackEnabled = e.IsChecked;
-                _logger.Info($"Haptic feedback: {e.IsChecked}");
+                _prefs.Edit().PutBoolean(KeyHaptic, e.IsChecked).Apply();
+                Android.Util.Log.Info(Tag, $"Haptic feedback: {e.IsChecked}");
             };
 
             _qualityGroup.CheckedChange += (s, e) =>
@@ -105,13 +106,13 @@ namespace Ninehoto.Droid
                     Resource.Id.radio_quality_high => ThumbnailQuality.High,
                     _ => ThumbnailQuality.Medium
                 };
-                _logger.Info($"Thumbnail quality set to: {quality}");
+                _prefs.Edit().PutInt(KeyQuality, (int)quality).Apply();
+                Android.Util.Log.Info(Tag, $"Thumbnail quality set to: {quality}");
             };
 
             _debugLoggingSwitch.CheckedChange += (s, e) =>
             {
                 FeatureFlags.Instance.SetFeature("debug_logging", e.IsChecked);
-                _logger.Configure(e.IsChecked ? LoggingService.LogLevel.Debug : LoggingService.LogLevel.Info);
             };
 
             _perfMetricsSwitch.CheckedChange += (s, e) =>
@@ -121,15 +122,15 @@ namespace Ninehoto.Droid
 
             _resetStatsButton.Click += (s, e) =>
             {
-                _prefs.ResetStatistics();
-                _logger.Info("Statistics reset");
+                _prefs.Edit().Remove("statistics").Apply();
+                Android.Util.Log.Info(Tag, "Statistics reset");
                 Toast.MakeText(this, "Statistics reset", ToastLength.Short).Show();
             };
 
             _clearCacheButton.Click += (s, e) =>
             {
                 ThumbnailCache.Instance.Clear();
-                _logger.Info("Cache cleared");
+                Android.Util.Log.Info(Tag, "Cache cleared");
                 Toast.MakeText(this, "Cache cleared", ToastLength.Short).Show();
             };
         }
