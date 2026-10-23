@@ -29,7 +29,7 @@ A dual-platform photo and video cleanup app for iOS and Android. Browse your mos
 
 ## Architecture
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full layout. In short:
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full layout and [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for App Store / Google Play release steps. In short:
 
 - `ios/` — SwiftUI app (`Ninehoto/`), XCTest suite (`NinehotoTests/`), XcodeGen `project.yml`
 - `android/` — Xamarin/C# app (`Ninehoto.Android/`) and xUnit tests (`Ninehoto.Android.Tests/`)

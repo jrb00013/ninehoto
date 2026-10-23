@@ -3,12 +3,12 @@ import Photos
 import UIKit
 
 protocol PhotoLibraryServiceProtocol {
-    var currentAuthorizationStatus: PHAuthorizationStatus { get }
+    func currentAuthorizationStatus() -> PHAuthorizationStatus
     func requestAuthorization() async -> PHAuthorizationStatus
     func fetchRecentMedia(limit: Int) async -> [PHAsset]
     func requestFileSize(for asset: PHAsset) -> Int64
     func deleteAssets(_ assets: [PHAsset]) async throws
-    func fetchThumbnail(for asset: PHAsset, targetSize: CGSize) async -> UIImage?
+    func loadImage(for asset: PHAsset, targetSize: CGSize) async -> UIImage?
 }
 
 extension PhotoLibraryService: PhotoLibraryServiceProtocol {}
