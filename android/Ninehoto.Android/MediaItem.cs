@@ -1,5 +1,4 @@
 using Android.Net;
-using Uri = Android.Net.Uri;
 
 namespace Ninehoto;
 
