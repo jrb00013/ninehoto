@@ -1,5 +1,6 @@
 import SwiftUI
 import AVKit
+import Photos
 
 struct VideoPlayerView: View {
     let asset: PHAsset

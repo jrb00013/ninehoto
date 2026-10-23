@@ -1,5 +1,6 @@
 import Foundation
 import Photos
+import UIKit
 
 protocol PhotoLibraryServiceProtocol {
     var currentAuthorizationStatus: PHAuthorizationStatus { get }

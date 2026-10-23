@@ -25,7 +25,7 @@ final class AccessibilityManager {
         UIAccessibility.preferredContentSizeCategory
     }
 
-    func announce(_ message: String, priority: UIAccessibilityPriority = .medium) {
+    func announce(_ message: String, priority: UIAccessibilityPriority? = nil) {
         UIAccessibility.post(notification: .announcement, argument: message)
     }
 

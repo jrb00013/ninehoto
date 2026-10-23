@@ -1,7 +1,7 @@
 import Foundation
 
-final class FileManager {
-    static let shared = FileManager()
+final class AppFileManager {
+    static let shared = AppFileManager()
     
     private let fileManager = FileManager.default
     

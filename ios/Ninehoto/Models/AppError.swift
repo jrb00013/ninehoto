@@ -44,4 +44,22 @@ enum AppError: Error, LocalizedError, Equatable {
             return true
         }
     }
+
+    static func == (lhs: AppError, rhs: AppError) -> Bool {
+        switch (lhs, rhs) {
+        case (.photoLibraryAccessDenied, .photoLibraryAccessDenied),
+             (.photoLibraryAccessRestricted, .photoLibraryAccessRestricted),
+             (.noPhotosFound, .noPhotosFound),
+             (.sessionExpired, .sessionExpired):
+            return true
+        case let (.thumbnailLoadFailed(a), .thumbnailLoadFailed(b)):
+            return a == b
+        case let (.deletionFailed(c1, r1), .deletionFailed(c2, r2)):
+            return c1 == c2 && r1 == r2
+        case let (.unknown(a), .unknown(b)):
+            return a.localizedDescription == b.localizedDescription
+        default:
+            return false
+        }
+    }
 }

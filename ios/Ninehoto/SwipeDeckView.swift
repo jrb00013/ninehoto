@@ -12,7 +12,7 @@ struct SwipeDeckView: View {
     @State private var fullscreenAsset: PHAsset?
     private let swipeThreshold: CGFloat = 120
 
-    private var swipeDirection: SwipeDirection {
+    private var swipeDirection: DragDirection {
         if dragOffset.width < -40 { return .left }
         if dragOffset.width > 40 { return .right }
         return .none
@@ -166,7 +166,7 @@ struct SwipeDeckView: View {
             }
     }
 
-    private func animateOut(direction: SwipeDirection, completion: @escaping () -> Void) {
+    private func animateOut(direction: DragDirection, completion: @escaping () -> Void) {
         withAnimation(.easeOut(duration: 0.15)) {
             switch direction {
             case .left:
@@ -268,7 +268,7 @@ struct SwipeDeckView: View {
     }
 }
 
-private enum SwipeDirection {
+private enum DragDirection {
     case left, right, none
 }
 

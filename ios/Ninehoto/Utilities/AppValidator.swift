@@ -5,7 +5,7 @@ final class AppValidator {
     
     private init() {}
     
-    func validateAppIntegrity() -> ValidationResult {
+    func validateAppIntegrity() -> AppValidationResult {
         var issues: [String] = []
         
         // Check bundle identifier
@@ -31,7 +31,7 @@ final class AppValidator {
     }
 }
 
-enum ValidationResult {
+enum AppValidationResult {
     case valid
     case invalid([String])
 }
