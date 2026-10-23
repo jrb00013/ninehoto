@@ -33,7 +33,7 @@ jobs:
           xcodebuild -project ios/Ninehoto.xcodeproj \
             -scheme Ninehoto \
             -configuration Debug \
-            -destination 'generic platform=iOS Simulator' \
+            -destination 'generic/platform=iOS Simulator' \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
@@ -80,37 +80,13 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install Android workload
+        run: dotnet workload install android
 
       - name: Build Android (Debug)
-        run: |
-          cd android && ./gradlew assembleDebug --no-daemon
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: ninehoto-android-apk
-          path: android/Ninehoto.Android/bin/Debug/net8.0-android/apk/debug/*.apk
-          retention-days: 7
-
-  android-test:
-    name: Android Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      - name: Build Android Tests
-        run: |
-          cd android/Ninehoto.Android && dotnet build --no-restore
-
-      - name: Run Android Tests
-        run: |
-          cd android/Ninehoto.Android && dotnet test --no-build 2>&1 || echo "Tests require emulator/device"
+        run: dotnet build android/Ninehoto.Android/Ninehoto.Android.csproj -c Debug

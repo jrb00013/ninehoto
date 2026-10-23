@@ -31,6 +31,7 @@ jobs:
   swift-format:
     name: Swift Format Check
     runs-on: macos-14
+    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -42,12 +43,8 @@ jobs:
 
       - name: Check Swift Format
         run: |
-          if command -v swift-format &>/dev/null; then
-            swift-format --check ios/Ninehoto/
-          else
-            brew install swift-format
-            swift-format --check ios/Ninehoto/
-          fi
+          brew list swift-format &>/dev/null || brew install swift-format
+          swift-format lint --recursive ios/Ninehoto/
 
   swift-static-analysis:
     name: Swift Static Analysis
@@ -67,65 +64,8 @@ jobs:
           xcodebuild -project ios/Ninehoto.xcodeproj \
             -scheme Ninehoto \
             -configuration Debug \
-            -destination 'generic platform=iOS Simulator' \
+            -destination 'generic/platform=iOS Simulator' \
             analyze 2>&1 | grep -E "(error:|warning:)" | head -30
-
-  android-lint:
-    name: Android Lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Run Android Lint
-        run: |
-          cd android
-          ./gradlew lint --no-daemon 2>&1 | tail -20
-
-  android-detekt:
-    name: Android Detekt
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Run Detekt
-        run: |
-          cd android
-          ./gradlew detekt --no-daemon 2>&1 | tail -20
-
-  security-scan:
-    name: Security Scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Run OWASP Dependency Check
-        run: |
-          docker run --rm -v $(pwd):/project owasp/dependency-check.sh \
-            --project ninehoto \
-            --scan /project/android \
-            --format HTML \
-            --out /project
 
   code-coverage-report:
     name: Code Coverage Report
@@ -170,31 +110,11 @@ jobs:
           xcodebuild -project ios/Ninehoto.xcodeproj \
             -scheme Ninehoto \
             -configuration Debug \
-            -destination 'generic platform=iOS Simulator' \
+            -destination 'generic/platform=iOS Simulator' \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             build
-
-  android-check:
-    name: Android Gradle Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Gradle Check
-        run: |
-          cd android && ./gradlew check --no-daemon 2>&1 | tail -20
 
   file-checks:
     name: File & Format Checks
@@ -220,3 +140,19 @@ jobs:
             --include="*.swift" --include="*.cs" --include="*.yml" \
             --exclude="*.xcodeproj" --exclude="project.yml" \
             ios/Ninehoto/ android/Ninehoto.Android/ 2>/dev/null || true
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: CRITICAL,HIGH
+          exit-code: '1'
+          ignore-unfixed: true

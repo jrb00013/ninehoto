@@ -97,7 +97,7 @@ build-ios: generate-ios
 	@xcodebuild -project ios/Ninehoto.xcodeproj \
 		-scheme Ninehoto \
 		-configuration Debug \
-		-destination 'generic platform=iOS Simulator' \
+		-destination 'generic/platform=iOS Simulator' \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		CODE_SIGNING_ALLOWED=NO \
@@ -109,7 +109,7 @@ build-ios-release: generate-ios
 	@xcodebuild -project ios/Ninehoto.xcodeproj \
 		-scheme Ninehoto \
 		-configuration Release \
-		-destination 'generic platform=iOS Simulator' \
+		-destination 'generic/platform=iOS Simulator' \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		CODE_SIGNING_ALLOWED=NO \
@@ -197,7 +197,7 @@ analyze-ios: generate-ios
 	@xcodebuild -project ios/Ninehoto.xcodeproj \
 		-scheme Ninehoto \
 		-configuration Debug \
-		-destination 'generic platform=iOS Simulator' \
+		-destination 'generic/platform=iOS Simulator' \
 		analyze 2>&1 | grep -E "(error:|warning:)" | head -30 || true
 
 analyze-android:
