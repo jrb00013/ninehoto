@@ -69,6 +69,6 @@ final class Logger {
 
     func logError(_ error: Error, context: String = "", file: String = #file, function: String = #function, line: Int = #line) {
         let contextMessage = context.isEmpty ? "" : " [\(context)]"
-        error("\(error.localizedDescription)\(contextMessage)", file: file, function: function, line: line)
+        self.error("\(error.localizedDescription)\(contextMessage)", file: file, function: function, line: line)
     }
 }

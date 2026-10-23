@@ -16,7 +16,7 @@ final class MemoryPressureManager {
         Logger.shared.warning("Memory pressure warning received")
         
         ImageCacheManager.shared.clearMemoryCache()
-        ThumbnailCache.shared.clearCache()
+        ThumbnailCache.shared.clear()
         
         NotificationCenter.default.post(name: .memoryPressureWarning, object: nil)
     }
