@@ -101,7 +101,8 @@ struct VideoThumbnailView: View {
             Spacer()
             HStack {
                 Spacer()
-                if let duration = asset.duration {
+                let duration = asset.duration
+                if duration > 0 {
                     Text(formatDuration(duration))
                         .font(.caption)
                         .fontWeight(.medium)

@@ -3,6 +3,8 @@ import Foundation
 final class UserActivityManager {
     static let shared = UserActivityManager()
     
+    private var currentActivity: NSUserActivity?
+
     private init() {}
     
     func startActivity(type: String, userInfo: [String: Any] = [:]) {
@@ -10,14 +12,15 @@ final class UserActivityManager {
         activity.title = type
         activity.userInfo = userInfo
         activity.becomeCurrent()
+        currentActivity = activity
     }
     
     func updateActivity(userInfo: [String: Any]) {
-        NSUserActivity.current?.addUserInfoEntries(from: userInfo)
+        currentActivity?.addUserInfoEntries(from: userInfo)
     }
     
     func endActivity() {
-        NSUserActivity.current?.invalidate()
+        currentActivity?.invalidate()
     }
     
     func continueActivity(_ userActivity: NSUserActivity) {

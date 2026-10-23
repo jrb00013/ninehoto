@@ -39,7 +39,7 @@ struct SwipeDeckView: View {
                         fullscreenAsset = group.bestAsset
                         showFullscreen = true
                     }
-                    .onChange(of: session.currentIndex) { _, _ in
+                    .onChange(of: session.currentIndex) { _ in
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                             dragOffset = .zero
                             cardScale = 1.0
@@ -148,12 +148,12 @@ struct SwipeDeckView: View {
             .onEnded { value in
                 let w = value.translation.width
                 if w < -swipeThreshold {
-                    selectionFeedback.select()
+                    selectionFeedback.selectionChanged()
                     animateOut(direction: .left) {
                         session.swipeLeft()
                     }
                 } else if w > swipeThreshold {
-                    selectionFeedback.select()
+                    selectionFeedback.selectionChanged()
                     animateOut(direction: .right) {
                         session.swipeRight()
                     }

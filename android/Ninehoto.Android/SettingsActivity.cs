@@ -129,7 +129,7 @@ namespace Ninehoto.Droid
 
             _clearCacheButton.Click += (s, e) =>
             {
-                ThumbnailCache.Instance.Clear();
+                ThumbnailCache.Instance(this).Clear();
                 Android.Util.Log.Info(Tag, "Cache cleared");
                 Toast.MakeText(this, "Cache cleared", ToastLength.Short).Show();
             };

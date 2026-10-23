@@ -1,4 +1,3 @@
-using Android.Util;
 using Android.Content;
 using Android.Graphics;
 using Android.OS;
