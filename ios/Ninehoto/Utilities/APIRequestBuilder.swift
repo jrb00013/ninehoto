@@ -3,10 +3,10 @@ import Foundation
 struct APIResponse<T: Decodable>: Decodable {
     let success: Bool
     let data: T?
-    let error: APIError?
+    let error: APIResponseError?
 }
 
-struct APIError: Error, Decodable {
+struct APIResponseError: Error, Decodable {
     let code: String
     let message: String
 }
@@ -25,11 +25,11 @@ final class APIRequestBuilder {
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw APIError(code: "invalid_response", message: "Invalid response")
+            throw APIResponseError(code: "invalid_response", message: "Invalid response")
         }
         
         guard (200...299).contains(httpResponse.statusCode) else {
-            throw APIError(code: "http_error", message: "HTTP \(httpResponse.statusCode)")
+            throw APIResponseError(code: "http_error", message: "HTTP \(httpResponse.statusCode)")
         }
         
         return try JSONDecoder().decode(T.self, from: data)

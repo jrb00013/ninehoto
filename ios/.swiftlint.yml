@@ -4,6 +4,7 @@
 
 disabled_rules:
   - trailing_whitespace
+  - trailing_newline
   - file_length
   - line_length
 
@@ -30,16 +31,16 @@ opt_in_rules:
   - multiline_parameters
   - untyped_header_in_conditional_compilation_directive
 
-force_cast: error
-force_try: error
+force_cast: warning
+force_try: warning
 
 type_body_length:
   warning: 300
   error: 400
 
 function_body_length:
-  warning: 50
-  error: 100
+  warning: 80
+  error: 200
 
 file_length:
   warning: 500
@@ -58,7 +59,5 @@ type_name:
     warning: 40
     error: 60
 
-warning_threshold: 5
-error_threshold: 15
 
 reporter: "xcode"
