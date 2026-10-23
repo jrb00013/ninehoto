@@ -3,11 +3,11 @@ using Android.App;
 using Android.OS;
 using Android.Widget;
 using AndroidX.AppCompat.App;
-using Ninehoto.Android.Interfaces;
-using Ninehoto.Android.Services;
-using Ninehoto.Android.Utilities;
+using Ninehoto.Droid.Interfaces;
+using Ninehoto.Droid.Services;
+using Ninehoto.Droid.Utilities;
 
-namespace Ninehoto.Android
+namespace Ninehoto.Droid
 {
     [Activity(Label = "Settings")]
     public class SettingsActivity : AppCompatActivity

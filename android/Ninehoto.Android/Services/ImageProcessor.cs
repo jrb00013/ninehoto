@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Android.Graphics;
 using Android.Media;
 
-namespace Ninehoto.Android.Services
+namespace Ninehoto.Droid.Services
 {
     public class ImageProcessor
     {

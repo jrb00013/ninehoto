@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 
-namespace Ninehoto.Android.Utilities
+namespace Ninehoto.Droid.Utilities
 {
     public class DateFormatters
     {

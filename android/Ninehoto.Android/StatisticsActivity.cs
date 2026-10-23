@@ -6,9 +6,9 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 using AndroidX.AppCompat.App;
-using Ninehoto.Android.Models;
+using Ninehoto.Droid.Models;
 
-namespace Ninehoto.Android
+namespace Ninehoto.Droid
 {
     [Activity(Label = "Statistics")]
     public class StatisticsActivity : AppCompatActivity

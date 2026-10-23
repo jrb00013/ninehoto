@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Android.Util;
 
-namespace Ninehoto.Android.Utilities
+namespace Ninehoto.Droid.Utilities
 {
     public class PerformanceMonitor
     {

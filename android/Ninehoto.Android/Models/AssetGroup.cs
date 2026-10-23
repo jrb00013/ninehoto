@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Ninehoto.Android.Models
+namespace Ninehoto.Droid.Models
 {
     public enum GroupType
     {

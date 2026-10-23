@@ -5,7 +5,7 @@ using Android.OS;
 using Android.Provider;
 using Android.Util;
 using Android.Net;
-using Ninehoto.Android.Models;
+using Ninehoto.Droid.Models;
 using Uri = Android.Net.Uri;
 
 namespace Ninehoto;

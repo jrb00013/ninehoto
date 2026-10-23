@@ -14,6 +14,11 @@
     <CheckEolTargetFramework>false</CheckEolTargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <AndroidLibrary Remove="gradle/**" />
+    <None Remove="gradle/**" />
+    <Compile Remove="obj/**;bin/**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.7.0.5" />
     <PackageReference Include="Xamarin.AndroidX.CardView" Version="1.0.0.25" />
   </ItemGroup>

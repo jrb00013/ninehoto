@@ -5,11 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Hardware;
-using Ninehoto.Android.Interfaces;
-using Ninehoto.Android.Models;
-using Ninehoto.Android.Services;
+using Ninehoto.Droid.Interfaces;
+using Ninehoto.Droid.Models;
+using Ninehoto.Droid.Services;
 
-namespace Ninehoto.Android.ViewModels
+namespace Ninehoto.Droid.ViewModels
 {
     public enum AppPhase
     {

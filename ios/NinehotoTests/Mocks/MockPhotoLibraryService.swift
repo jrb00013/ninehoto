@@ -57,11 +57,11 @@ final class MockThumbnailCache: ThumbnailCacheProtocol {
     var prefetchCallCount = 0
     var clearCallCount = 0
 
-    func prefetch(_ assets: [PHAsset], service: PhotoLibraryService) {
+    func prefetch(_ assets: [PHAsset], service: PhotoLibraryService) async {
         prefetchCallCount += 1
     }
 
-    func clear() {
+    func clear() async {
         clearCallCount += 1
         cachedImages.removeAll()
     }

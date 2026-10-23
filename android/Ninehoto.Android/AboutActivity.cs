@@ -5,7 +5,7 @@ using Android.Widget;
 using AndroidX.AppCompat.App;
 using AndroidWebView = Android.Webkit.WebView;
 
-namespace Ninehoto.Android
+namespace Ninehoto.Droid
 {
     [Activity(Label = "About")]
     public class AboutActivity : AppCompatActivity

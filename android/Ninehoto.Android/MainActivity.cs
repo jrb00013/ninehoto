@@ -9,7 +9,7 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.AppCompat.App;
 using AndroidX.Core.Content;
-using Ninehoto.Android.Models;
+using Ninehoto.Droid.Models;
 using AlertDialog = AndroidX.AppCompat.App.AlertDialog;
 using Uri = Android.Net.Uri;
 
