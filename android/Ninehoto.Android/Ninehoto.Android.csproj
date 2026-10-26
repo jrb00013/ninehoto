@@ -14,7 +14,15 @@
     <CheckEolTargetFramework>false</CheckEolTargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <AndroidLibrary Remove="gradle/**" />
+    <None Remove="gradle/**" />
+    <!-- Unfinished scaffolding (no implementations behind these interfaces); not part of the app yet. -->
+    <Compile Remove="Interfaces/**;Services/**;ViewModels/**;Models/MediaItem.cs;Models/AppError.cs" />
+    <Compile Remove="Utilities/CacheManager.cs;Utilities/DateFormatters.cs;Utilities/DeepLinkHandler.cs;Utilities/EnvironmentManager.cs;Utilities/Extensions.cs;Utilities/MockDataGenerator.cs;Utilities/NetworkMonitor.cs;Utilities/PerformanceMonitor.cs;Utilities/SystemMonitor.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.7.0.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Xamarin.AndroidX.CardView" Version="1.0.0.25" />
   </ItemGroup>
 </Project>

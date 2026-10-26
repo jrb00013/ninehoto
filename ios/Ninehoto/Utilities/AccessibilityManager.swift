@@ -21,11 +21,11 @@ final class AccessibilityManager {
         UIAccessibility.isBoldTextEnabled
     }
 
-    var preferredContentSizeCategory: UIUserInterfaceSizeCategory {
-        UIAccessibility.preferredContentSizeCategory
+    var preferredContentSizeCategory: UIContentSizeCategory {
+        UIApplication.shared.preferredContentSizeCategory
     }
 
-    func announce(_ message: String, priority: UIAccessibilityPriority = .medium) {
+    func announce(_ message: String) {
         UIAccessibility.post(notification: .announcement, argument: message)
     }
 

@@ -1,6 +1,6 @@
 using System;
 
-namespace Ninehoto.Android.Models
+namespace Ninehoto.Droid.Models
 {
     public class MediaItem
     {

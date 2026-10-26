@@ -21,7 +21,8 @@ final class MediaMetadataExtractor {
                     let size = try await track.load(.naturalSize)
                     metadata.width = Int(size.width)
                     metadata.height = Int(size.height)
-                    metadata.bitrate = try await track.load(.estimatedDataRate)
+                    let rate: Float = try await track.load(.estimatedDataRate)
+                    metadata.bitrate = Double(rate)
                 }
             }
             

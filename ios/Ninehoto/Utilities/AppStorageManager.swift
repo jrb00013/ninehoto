@@ -8,7 +8,7 @@ final class AppStorageManager {
     func getStorageUsage() -> StorageUsage {
         let documents = getDirectorySize(.documentDirectory)
         let caches = getDirectorySize(.cachesDirectory)
-        let temp = getDirectorySize(.temporaryDirectory)
+        let temp = calculateDirectorySize(FileManager.default.temporaryDirectory)
         
         return StorageUsage(
             documents: documents,

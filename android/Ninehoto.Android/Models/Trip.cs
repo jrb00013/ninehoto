@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Ninehoto.Android.Models
+namespace Ninehoto.Droid.Models
 {
     public class Trip
     {

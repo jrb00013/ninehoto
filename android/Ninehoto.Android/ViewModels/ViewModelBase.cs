@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Ninehoto.Android.ViewModels
+namespace Ninehoto.Droid.ViewModels
 {
     public abstract class ViewModelBase : INotifyPropertyChanged
     {

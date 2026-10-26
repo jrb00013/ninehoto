@@ -27,7 +27,7 @@ final class PermissionManager {
         case .camera:
             return cameraStatus()
         case .notifications:
-            return notificationStatus()
+            return .notDetermined // use notificationPermissionStatus() (async)
         default:
             return .denied
         }
@@ -53,16 +53,13 @@ final class PermissionManager {
         }
     }
     
-    private func notificationStatus() -> PermissionStatus {
-        UNUserNotificationCenter.current().getNotificationSettings { settings in
-            switch settings.authorizationStatus {
-            case .notDetermined: return .notDetermined
-            case .authorized: return .authorized
-            case .denied: return .denied
-            default: return .denied
-            }
+    func notificationPermissionStatus() async -> PermissionStatus {
+        let settings = await UNUserNotificationCenter.current().notificationSettings()
+        switch settings.authorizationStatus {
+        case .notDetermined: return .notDetermined
+        case .authorized: return .authorized
+        default: return .denied
         }
-        return .notDetermined
     }
     
     func requestPermission(_ type: PermissionType) async -> PermissionStatus {
@@ -71,7 +68,7 @@ final class PermissionManager {
             let status = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
             return status == .authorized || status == .limited ? .authorized : .denied
         case .camera:
-            return AVCaptureDevice.requestAccess(for: .video) ? .authorized : .denied
+            return await AVCaptureDevice.requestAccess(for: .video) ? .authorized : .denied
         case .notifications:
             let granted = await NotificationManager.shared.requestPermission()
             return granted ? .authorized : .denied

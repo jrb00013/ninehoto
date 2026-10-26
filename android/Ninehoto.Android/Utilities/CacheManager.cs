@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Android.Runtime;
 
-namespace Ninehoto.Android.Utilities
+namespace Ninehoto.Droid.Utilities
 {
     public class CacheManager
     {

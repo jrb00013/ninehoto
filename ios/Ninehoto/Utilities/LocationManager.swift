@@ -1,13 +1,14 @@
 import Foundation
 
-final class LocationManager {
+final class LocationManager: NSObject {
     static let shared = LocationManager()
     
     private let locationManager = CLLocationManager()
     private var currentLocation: CLLocation?
     private var locationCompletion: ((CLLocation?) -> Void)?
     
-    private init() {
+    private override init() {
+        super.init()
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
     }
     

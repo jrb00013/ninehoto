@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Ninehoto.Android.Utilities;
+using Ninehoto.Droid.Utilities;
 
-namespace Ninehoto.Android.Services
+namespace Ninehoto.Droid.Services
 {
     public class AnalyticsService
     {

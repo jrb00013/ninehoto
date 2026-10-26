@@ -91,7 +91,7 @@ final class StatisticsTracker {
             keepCount: totalKeeps,
             sessionDate: Date(),
             durationSeconds: totalDuration,
-            averageSwipesPerMinute: totalSwipes > 0 ? (totalSwipes / (totalDuration / 60)) : 0,
+            averageSwipesPerMinute: totalSwipes > 0 ? (Double(totalSwipes) / (totalDuration / 60)) : 0,
             spaceSavedBytes: totalSpace
         )
     }

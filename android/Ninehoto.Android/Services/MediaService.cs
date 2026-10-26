@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Provider;
-using Ninehoto.Android.Models;
+using Ninehoto.Droid.Models;
 
-namespace Ninehoto.Android.Services
+namespace Ninehoto.Droid.Services
 {
     public class MediaService : IMediaService
     {

@@ -2,7 +2,7 @@ using System;
 using Android.Net;
 using Android.Content;
 
-namespace Ninehoto.Android.Utilities
+namespace Ninehoto.Droid.Utilities
 {
     public class NetworkMonitor
     {

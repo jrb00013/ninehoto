@@ -17,7 +17,7 @@
             android:id="@+id/text_session_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?textAppearanceBodyMedium"
+            android:textAppearance="?android:textAppearanceMedium"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -31,7 +31,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textAppearance="?textAppearanceBodySmall"
+                android:textAppearance="?android:textAppearanceSmall"
                 android:drawableStart="@drawable/ic_hand_draw"
                 android:drawablePadding="4dp" />
 
@@ -40,7 +40,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textAppearance="?textAppearanceBodySmall"
+                android:textAppearance="?android:textAppearanceSmall"
                 android:textColor="@color/error_color"
                 android:drawableStart="@drawable/ic_trash"
                 android:drawablePadding="4dp" />
@@ -50,7 +50,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textAppearance="?textAppearanceBodySmall"
+                android:textAppearance="?android:textAppearanceSmall"
                 android:textColor="@color/success_color"
                 android:drawableStart="@drawable/ic_check"
                 android:drawablePadding="4dp" />
@@ -59,7 +59,7 @@
                 android:id="@+id/text_session_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?textAppearanceBodySmall"
+                android:textAppearance="?android:textAppearanceSmall"
                 android:textColor="?android:textColorSecondary" />
         </LinearLayout>
     </LinearLayout>

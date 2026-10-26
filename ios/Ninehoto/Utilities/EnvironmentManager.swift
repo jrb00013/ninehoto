@@ -1,6 +1,6 @@
 import Foundation
 
-enum Environment: String {
+enum AppEnvironment: String {
     case development
     case staging
     case production
@@ -41,10 +41,10 @@ final class EnvironmentManager {
     
     private init() {}
     
-    var current: Environment {
+    var current: AppEnvironment {
         get {
             guard let rawValue = userDefaults.string(forKey: environmentKey),
-                  let env = Environment(rawValue: rawValue) else {
+                  let env = AppEnvironment(rawValue: rawValue) else {
                 return .development
             }
             return env
@@ -55,14 +55,14 @@ final class EnvironmentManager {
         }
     }
     
-    private func configureEnvironment(_ env: Environment) {
+    private func configureEnvironment(_ env: AppEnvironment) {
         Logger.shared.configure(minimumLevel: env.logLevel)
         
         if FeatureFlags.shared.isDebugLoggingEnabled {
             Logger.shared.configure(minimumLevel: .debug)
         }
         
-        Logger.shared.info("Environment set to: \(env.rawValue)")
+        Logger.shared.info("AppEnvironment set to: \(env.rawValue)")
     }
     
     var isDevelopment: Bool { current == .development }
@@ -78,7 +78,7 @@ extension EnvironmentManager {
         current = .development
         #else
         if let envString = launchOptions?["ENVIRONMENT"] as? String,
-           let env = Environment(rawValue: envString) {
+           let env = AppEnvironment(rawValue: envString) {
             current = env
         } else {
             current = .production

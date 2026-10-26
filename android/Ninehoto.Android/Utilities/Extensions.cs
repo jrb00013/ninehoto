@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Android.Text;
 
-namespace Ninehoto.Android.Utilities
+namespace Ninehoto.Droid.Utilities
 {
     public static class StringExtensions
     {

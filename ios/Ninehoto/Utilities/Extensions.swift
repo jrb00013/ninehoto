@@ -111,10 +111,6 @@ extension FileManager {
         urls(for: .cachesDirectory, in: .userDomainMask)[0]
     }
     
-    var temporaryDirectory: URL {
-        temporaryDirectory
-    }
-    
     func fileSize(at url: URL) -> Int64? {
         guard let attributes = try? attributesOfItem(atPath: url.path) else { return nil }
         return attributes[.size] as? Int64

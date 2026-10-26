@@ -18,7 +18,7 @@ final class AppTerminator {
         AnalyticsService.shared.trackEvent(AnalyticsEvent(name: "app_terminated", properties: [:]))
         
         // Clean up
-        AppLifecycleManager.shared.stopUpdatingLocation()
+        LocationManager.shared.stopUpdatingLocation()
     }
     
     func prepareForTermination() {

@@ -30,7 +30,7 @@ final class HapticsManager {
     }
     
     func playImpact(style: UIImpactFeedbackGenerator.FeedbackStyle) {
-        impactGenerator.impactOccurred(style: style)
+        UIImpactFeedbackGenerator(style: style).impactOccurred()
     }
     
     func playSelection() {

@@ -84,7 +84,7 @@ struct LoadingOverlayShowcase: View {
             
             ShimmerLoadingView()
         }
-        .overlay(showLoading ? LoadingOverlayView(message: "Loading...") : nil)
+        .overlay(showLoading ? LoadingOverlayView(message: "Loading...", progress: nil) : nil)
     }
 }
 

@@ -52,42 +52,42 @@ final class EnvironmentManagerTests: XCTestCase {
     }
     
     func testEnvironmentBaseURL() {
-        let devURL = Environment.development.baseURL
+        let devURL = AppEnvironment.development.baseURL
         XCTAssertTrue(devURL.contains("dev"))
         
-        let stagingURL = Environment.staging.baseURL
+        let stagingURL = AppEnvironment.staging.baseURL
         XCTAssertTrue(stagingURL.contains("staging"))
         
-        let prodURL = Environment.production.baseURL
+        let prodURL = AppEnvironment.production.baseURL
         XCTAssertTrue(prodURL.contains("ninehoto.com"))
     }
     
     func testEnvironmentIsDebugEnabled() {
-        XCTAssertTrue(Environment.development.isDebugEnabled)
-        XCTAssertTrue(Environment.staging.isDebugEnabled)
-        XCTAssertFalse(Environment.production.isDebugEnabled)
+        XCTAssertTrue(AppEnvironment.development.isDebugEnabled)
+        XCTAssertTrue(AppEnvironment.staging.isDebugEnabled)
+        XCTAssertFalse(AppEnvironment.production.isDebugEnabled)
     }
     
     func testEnvironmentSupportsAnalytics() {
-        XCTAssertFalse(Environment.development.supportsAnalytics)
-        XCTAssertFalse(Environment.staging.supportsAnalytics)
-        XCTAssertTrue(Environment.production.supportsAnalytics)
+        XCTAssertFalse(AppEnvironment.development.supportsAnalytics)
+        XCTAssertFalse(AppEnvironment.staging.supportsAnalytics)
+        XCTAssertTrue(AppEnvironment.production.supportsAnalytics)
     }
     
     func testEnvironmentLogLevel() {
-        XCTAssertEqual(Environment.development.logLevel, .debug)
-        XCTAssertEqual(Environment.staging.logLevel, .info)
-        XCTAssertEqual(Environment.production.logLevel, .warning)
+        XCTAssertEqual(AppEnvironment.development.logLevel, .debug)
+        XCTAssertEqual(AppEnvironment.staging.logLevel, .info)
+        XCTAssertEqual(AppEnvironment.production.logLevel, .warning)
     }
     
     func testApiBaseURL() {
         envManager.current = .development
-        XCTAssertEqual(envManager.apiBaseURL, Environment.development.baseURL)
+        XCTAssertEqual(envManager.apiBaseURL, AppEnvironment.development.baseURL)
         
         envManager.current = .staging
-        XCTAssertEqual(envManager.apiBaseURL, Environment.staging.baseURL)
+        XCTAssertEqual(envManager.apiBaseURL, AppEnvironment.staging.baseURL)
         
         envManager.current = .production
-        XCTAssertEqual(envManager.apiBaseURL, Environment.production.baseURL)
+        XCTAssertEqual(envManager.apiBaseURL, AppEnvironment.production.baseURL)
     }
 }

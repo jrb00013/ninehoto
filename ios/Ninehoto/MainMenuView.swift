@@ -23,7 +23,7 @@ struct MainMenuView: View {
                     Image(systemName: "camera.viewfinder")
                         .font(.system(size: 60))
                         .foregroundStyle(.white)
-                        .symbolEffect(.pulse, options: .repeating)
+                        .modifier(PulseSymbolEffect())
 
                     Text("ninehoto")
                         .font(.system(size: 36, weight: .black, design: .rounded))
@@ -169,5 +169,16 @@ extension Color {
             blue: Double(b) / 255,
             opacity: Double(a) / 255
         )
+    }
+}
+
+
+private struct PulseSymbolEffect: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 17.0, *) {
+            content.symbolEffect(.pulse, options: .repeating)
+        } else {
+            content
+        }
     }
 }

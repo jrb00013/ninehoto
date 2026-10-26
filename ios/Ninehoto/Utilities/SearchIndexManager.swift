@@ -33,7 +33,7 @@ final class SearchIndexManager {
         for item in items {
             let keywords = item.id.components(separatedBy: " ")
             for keyword in keywords {
-                index(keyword.lowercased(), for: item.id)
+                index[keyword.lowercased(), default: []].append(item.id)
             }
         }
     }
